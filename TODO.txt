@@ -1,0 +1,10 @@
+https://developers.google.com/maps/documentation/javascript/examples/circle-simple
+
+- Nearby Search
+
+implementing coast calculator 
+
+implementing better cache. 
+
+implmenting override method for update dataset if older than 1 year
+

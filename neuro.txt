@@ -1,0 +1,252 @@
+        /*
+        $n = new PlacesItem();
+        $n->place_id = "123";
+        $n->name = "Hotelbar";
+        $n->types = implode(",",["bar"]);
+        $n->location = ["lat"=> 123, "lng"=> 8.12];
+        $n->place = "Berlin";
+        $n->zip = "59939";
+        $n->street = "Am Markt";
+        $n->street_number = "15";
+        $n->country = "Germany";
+        $n->phone = "020202";
+        $n->website = "http://www";
+        $n->formatted_address = "bala ";
+        $n->user_ratings_total = 285;
+        $n->save();
+        echo $n->id;
+        dd(PlacesItem::find($n->id));
+        // store_full_dataset
+        */
+
+        $arr = [
+            'result' => [
+                "address_components" => [
+                     [
+                        "long_name" => "15",
+                        "short_name" => "15",
+                        "types" => ["street_number"]
+                     ],
+                     [
+                        "long_name" => "Arnsberg",
+                        "short_name" => "Arnsberg",
+                        "types" => ["admin"]
+                     ],                         
+                     [
+                        "long_name" => "59939",
+                        "short_name" => "59939",
+                        "types" => ["postal_code"]
+                     ],                                                               
+                ]
+            ]
+        ];
+        #dd( $this->filter_value_from_google_address_components_by_name($arr, "postal_code") );
+
+        
+        $arr1 = [
+            0 => ["name"=>"x", "lat"=>123],
+            1 => ["name"=>"x", "lat"=>123],
+            2 => ["name"=>"x", "lat"=>123],
+        ];
+        $arr2 = [
+            0 => ["name"=>"y", "lat"=>123],
+            1 => ["name"=>"y", "lat"=>123],
+            2 => ["name"=>"y", "lat"=>123],
+        ];        
+        $arr3 = [
+            0 => ["name"=>"z", "lat"=>123],
+            1 => ["name"=>"z", "lat"=>123],
+            2 => ["name"=>"z", "lat"=>123],
+        ];
+        $arr = [
+            $arr1, $arr2, $arr3
+        ];
+        $_r = [];
+        for($i=0; $i<count($arr);$i++){
+            //print_r($arr[$i]);
+            $_r = array_merge($_r,$arr[$i]);
+        }
+
+
+
+
+
+
+        /*        
+        $this->result_set = collect([0 => ["a","b"], 1 => ["c","d"]]);
+        $this->result_set = $this->result_set->merge([0=>["e","f"]]);
+        dd($this->result_set->all());
+
+        echo '<pre>';
+        print_r($_r);
+        echo '</pre>';
+        dd(array_merge($arr[0],$arr[1],$arr[2]));
+        /*
+        $i =1;
+        do {
+            $this->result_set->push([
+                "html_attributions" => "bla",
+                "results" => [
+                    0 => [
+                        "business_status" => "oper",
+                        "geometry" => [
+                            "location" => ["lat" => 123, "lng"=> 40]
+                            ]
+                    ]
+                ]
+            ]);
+            $i++;
+        } while ($i <= 10);
+        dd($this->result_set);
+        */
+        /*
+        $i = 1;
+        $c = collect();
+        // remove all with value 2
+        $c = $c->reject(function ($name) {
+            return $name == 2;
+        });
+        // push array
+        $c->push([5,22]);
+        
+        // cast to array
+        // dd($c->all());
+        #dd($c);
+        #dd($c.push([22]));
+        do
+        {
+            $c->push($i);
+            echo $i;         // es wird $i ausgegeben
+            echo "<br>"; 
+            $i++ ;            // Wert wird um 1 erhöht
+        } while ($i <= 10);
+        dd($c);
+        return;
+        */
+
+        #$_db = $this->search_by_place($request);        
+
+
+    public function xxx_get_places_data_from_google_api($request) {  
+        
+        $pagetoken = $type = "";
+        if ( null !== $request['type'] ) {
+            $type = $request['type'];
+        } else {
+            $type = "restaurant";
+        }   
+
+        $geoDataCollection = collect();
+        $pagetoken = null;
+        $i = 1;
+        do
+        {
+            echo '<p>'.$i." hat pagetoken: ". $pagetoken;
+            $response = Http::get('https://maps.googleapis.com/maps/api/place/nearbysearch/json', 
+                [
+                    'location'=> $request['lat'].",".$request['lng'],
+                    'radius' => 1500,
+                    'type' => $type,
+                    'key'=> $this->google_api_key,
+                    #'pagetoken' => $pagetoken
+                ]
+            );            
+            $geoDataCollection->push($response->json()["results"]); 
+            if(isset ($response->json()["next_page_token"])) {
+                $pagetoken = $response->json()["next_page_token"];
+            }
+            #sleep(2);
+            $i++;
+            echo $i;
+            if($i == 1) {
+                print_r($geoDataCollection);
+                dd("out off error");
+            }
+        } while ( !isset ($response->json()["next_page_token"]) );
+        
+        dd($geoDataCollection);
+
+        return;
+
+        $google_places_api_url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=%s,%s&radius=1500&type=%s&key=%s%s';
+        $url = sprintf($google_places_api_url,
+                $request['lat'],
+                $request['lng'],
+                $type,
+                $this->google_api_key,
+                $pagetoken
+            );        
+        
+
+
+        $ch = curl_init(); // cURL ínitialisieren
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HEADER, 0);  
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  
+        $result = curl_exec($ch); // Ausführen
+        curl_close($ch); // Objekt schließen und Ressourcen freigeben
+        
+        $result = json_decode($result,1);
+        $response = $result;
+        $response["calledUri"] = $url;
+        header('Content-Type: application/json');
+        header('Content-type: application/json; charset=utf-8');
+        echo json_encode($response);        
+    }
+
+
+    public function xxx__index(Request $request) {  
+             
+        $pagetoken = $type = "";
+        
+        if (null !== $request->input('pagetoken')) {
+            $pagetoken = "&pagetoken=".$request->input('pagetoken');
+        }
+        if ( null !== $request->input('type') ) {
+            $type = $request->input('type');
+        } else {
+            $type = "restaurant";
+        }        
+        
+        $url = sprintf('https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=%s,%s&radius=1500&type=%s&key=%s%s',
+                $request->input('lat'),
+                $request->input('lng'),
+                $type,
+                $this->google_api_key,
+                $pagetoken
+                );
+        
+        
+        $ch = curl_init(); // cURL ínitialisieren
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HEADER, 0);  
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  
+        $result = curl_exec($ch); // Ausführen
+        curl_close($ch); // Objekt schließen und Ressourcen freigeben
+        
+        $result = json_decode($result,1);
+        $response = $result;
+        $response["calledUri"] = $url;
+        header('Content-Type: application/json');
+        header('Content-type: application/json; charset=utf-8');
+        echo json_encode($response);        
+    }
+
+
+    
+        
+
+
+        echo "--";
+        dd($_places_items);
+
+        /*
+        // $this->get_geodata_by_name();
+
+        return UserLocationRequest::where(              
+            ['request' => $request->input("address")]            
+        )->get();        
+
+        return $this->search_by_place($request);
+        return PlacesItem::all();
+        */            
