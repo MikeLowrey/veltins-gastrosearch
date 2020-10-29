@@ -16,6 +16,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('download/{id}', [App\Http\Controllers\DownloadDataSheetAsExcelController::class, 'export']);
+Route::get('/download/generate/{zip}/{type}', [App\Http\Controllers\DownloadDataSheetAsExcelController::class, 'export_by_zip_and_type']);
+
+Route::get('download', [App\Http\Controllers\DownloadDataSheetAsExcelController::class, 'test']);
+
 Route::get('/test', function () {
     return view('test');
 });

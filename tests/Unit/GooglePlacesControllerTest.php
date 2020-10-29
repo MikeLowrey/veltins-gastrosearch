@@ -3,16 +3,18 @@
 namespace Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
-class ExampleTest extends TestCase
+class GooglePlacesControllerTest extends TestCase
 {
     /**
      * A basic test example.
      *
      * @return void
      */
-    public function testBasicTest()
+    public function testUserInputTest()
     {
+      
         $this->assertTrue(true);
     }
 }

@@ -14,7 +14,7 @@ async function start() {
     // let _json, _json2 = null;
     console.log("step1-_json", _json)
     let input = document.getElementById("adress-input-field").value;
-    let type = document.getElementById("type").options[document.getElementById("type").options.selectedIndex].value;
+    let type = document.getElementById("type-1").options[document.getElementById("type-1").options.selectedIndex].value;
     let apiKey = 'AIzaSyDlG7DSQ99FNnOb8Z2tH9JpnYfVxsx4jFA';
     let api_get_adress = "https://maps.googleapis.com/maps/api/geocode/json?address=%s,+CA&key=%s";
     let apiCallUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=" + encodeURIComponent(input) + ",+CA&key=" + apiKey;

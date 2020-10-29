@@ -19341,7 +19341,164 @@ module.exports = function(module) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
+
+var searchInput = 'location';
+autocomplete = new google.maps.places.Autocomplete(document.getElementById(searchInput), {
+  types: ['geocode']
+}); // Set initial restrict to the greater list of countries.
+
+autocomplete.setComponentRestrictions({
+  country: ["de"]
+});
+google.maps.event.addListener(autocomplete, 'place_changed', function () {
+  var near_place = autocomplete.getPlace();
+  window.t = near_place;
+  console.log("near_place", near_place);
+  document.getElementById('latitude').value = near_place.geometry.location.lat();
+  document.getElementById('longitude').value = near_place.geometry.location.lng();
+  document.getElementById('place-id').value = near_place.place_id;
+  document.getElementById('formatted-address').value = near_place.formatted_address;
+});
+
+document.getElementById('location').onchange = function () {
+  document.getElementById('latitude').value = '';
+  document.getElementById('longitude').value = '';
+  document.getElementById('place-id').value = '';
+};
+
+document.getElementById('location').oninput = function () {
+  if (document.getElementById('location').value.length == 0) {
+    document.getElementById("zip").removeAttribute("disabled");
+  } else {
+    document.getElementById("zip").setAttribute("disabled", "disabled");
+    document.getElementById("zip").value = "";
+  }
+};
+
+document.getElementById("zip").oninput = function () {
+  if (document.getElementById("zip").value.length > 0) {
+    document.getElementById('location').setAttribute("disabled", "disabled");
+    document.getElementById("location").value = "";
+    document.getElementById('radius').setAttribute("disabled", "disabled");
+  } else {
+    document.getElementById('location').removeAttribute("disabled");
+    document.getElementById('radius').removeAttribute("disabled");
+  }
+};
+
+document.getElementById("searchSubmit").onclick = function () {
+  var zip = document.getElementById("zip").value;
+  var type = document.getElementById("type").options[document.getElementById("type").options.selectedIndex].value;
+
+  if (type == "0") {
+    document.querySelector('#custom-error-alert').classList.add("in");
+    alert();
+    setTimeout(function () {
+      document.querySelector('#custom-error-alert').classList.remove("in");
+    }, 3000);
+    return;
+  }
+
+  document.getElementById("myTable").getElementsByTagName('tbody')[0].innerHTML = "";
+
+  if (zip != '') {
+    var _url = 'api/searchbyzip/' + zip + '/' + type;
+
+    callApi(_url);
+    return;
+  } // clear outpulist and list element
+
+
+  document.getElementById("myList").innerHTML = '';
+  var lat = document.getElementById('latitude').value;
+  var lng = document.getElementById('longitude').value;
+  var placeid = document.getElementById('place-id').value;
+
+  if (type == "0" || document.getElementById('location').value == "") {
+    document.querySelector('#custom-error-alert').classList.add("in");
+    setTimeout(function () {
+      document.querySelector('#custom-error-alert').classList.remove("in");
+    }, 3000);
+    return;
+  }
+
+  var radius = document.getElementById('radius').value;
+  var formatted_address = document.getElementById('formatted-address').value; // type , radius
+
+  var url = "api/testnew" + "?lat=" + lat + "&lng=" + lng + "&type=" + type + "&radius=" + radius + "&placeid=" + placeid + "&formattedaddress=" + formatted_address;
+  callApi(url);
+  return false;
+};
+
+function callApi(url) {
+  document.getElementById("searchSubmit").classList.add("d-none");
+  document.getElementsByClassName("lds-ripple")[0].classList.remove("d-none");
+  fetch(url).then(function (response) {
+    return response.json();
+  }).then(function (data) {
+    // console.log("data response",data)                    
+    document.getElementById("searchSubmit").classList.remove("d-none");
+    document.getElementsByClassName("lds-ripple")[0].classList.add("d-none");
+    BuildTable(data);
+    document.getElementById("hits").innerHTML = data.results.length + " Treffer!";
+
+    if (typeof data.referenz !== "undefined") {
+      document.getElementById("download-csv").style.display = "inline";
+      document.getElementById("download-csv").href = "/download/" + data.referenz;
+    } else if (data.results.length > 0) {
+      document.getElementById("download-csv").style.display = "inline";
+      document.getElementById("download-csv").href = "/download/generate/" + zip.value + "/" + type.value;
+      console.log("zip", zip);
+    } else {
+      document.getElementById("download-csv").style.display = "none";
+    }
+  });
+}
+
+function BuildTable(obj) {
+  Object.entries(obj.results).forEach(function (_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+        key = _ref2[0],
+        value = _ref2[1];
+
+    var table = document.getElementById("myTable").getElementsByTagName('tbody')[0];
+    var row = table.insertRow();
+    var cell1 = row.insertCell(0);
+    var cell2 = row.insertCell(1);
+    var cell3 = row.insertCell(2);
+    cell1.innerHTML = value.name.substring(0, 40);
+    cell2.innerHTML = "".concat(value.street, " ").concat(value.street_number, ", ").concat(value.zip, " ").concat(value.place);
+    cell3.innerHTML = value.phone;
+  });
+}
+
+function BuildList(obj) {
+  Object.entries(obj.results).forEach(function (_ref3) {
+    var _ref4 = _slicedToArray(_ref3, 2),
+        key = _ref4[0],
+        value = _ref4[1];
+
+    console.log("".concat(key, ": ").concat(value.name));
+    var node = document.createElement("LI");
+    var textnode = document.createTextNode(value.name + "-" + value.place_id + "-" + value.formatted_address + "-" + value.types); // let textnode = document.createTextNode(value.join());
+
+    node.appendChild(textnode);
+    document.getElementById("myList").appendChild(node);
+  });
+}
 
 /***/ }),
 

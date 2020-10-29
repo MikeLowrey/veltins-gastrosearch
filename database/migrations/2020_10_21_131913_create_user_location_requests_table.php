@@ -18,8 +18,9 @@ class CreateUserLocationRequestsTable extends Migration
             $table->string('request');
             $table->string('formatted_address');
             $table->string('place_id');
+            $table->string('type');
             $table->json('location');            
-            // $table->integer('radius');
+            $table->integer('radius');
             $table->timestamps();
         });
     }

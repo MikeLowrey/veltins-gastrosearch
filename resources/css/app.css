@@ -1,34 +1,137 @@
-.slidecontainer {
+.hide-this-element {
+    display: none;
+}
+
+.pac-logo::after {
+    background-image: none;
+}
+
+#pac-container {
+    padding-bottom: 12px;
+    margin-right: 12px;
+    background-color: brown;
     width: 100%;
 }
 
-.slider {
-    -webkit-appearance: none;
+.pac-target-input {
     width: 100%;
-    height: 25px;
-    background: #d3d3d3;
-    outline: none;
-    opacity: 0.7;
-    -webkit-transition: .2s;
-    transition: opacity .2s;
 }
 
-.slider:hover {
+.pac-controls {
+    display: inline-block;
+    padding: 5px 11px;
+}
+
+.pac-controls label {
+    font-family: Roboto;
+    font-size: 13px;
+    font-weight: 300;
+}
+
+#pac-input {
+    background-color: #fff;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+    margin-left: 12px;
+    padding: 0 11px 0 13px;
+    text-overflow: ellipsis;
+    width: 400px;
+}
+
+#pac-input:focus {
+    border-color: #4d90fe;
+}
+
+body {}
+
+.green-bg {
+    background-color: #096C30;
+    color: white;
+}
+
+ul>li {
+    color: black;
+}
+
+.separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    font-weight: bold;
+}
+
+.separator::before,
+.separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #fff;
+}
+
+.separator::before {
+    margin-right: .25em;
+}
+
+.separator::after {
+    margin-left: .25em;
+}
+
+.fade {
+    opacity: 0;
+    -webkit-transition: opacity 0.15s linear;
+    -moz-transition: opacity 0.15s linear;
+    -o-transition: opacity 0.15s linear;
+    transition: opacity 0.15s linear;
+}
+
+.fade.in {
     opacity: 1;
 }
 
-.slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 25px;
-    height: 25px;
-    background: #4CAF50;
-    cursor: pointer;
+label {
+    font-size: 10px;
+    margin-bottom: -10px;
+    font-weight: bold;
 }
 
-.slider::-moz-range-thumb {
-    width: 25px;
-    height: 25px;
-    background: #4CAF50;
-    cursor: pointer;
+.hits {
+    color: #4d90fe;
+    font-weight: lighter;
+    font-size: 12px;
+}
+
+.lds-ripple {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.lds-ripple div {
+    position: absolute;
+    border: 4px solid #fff;
+    opacity: 1;
+    border-radius: 50%;
+    animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+.lds-ripple div:nth-child(2) {
+    animation-delay: -0.5s;
+}
+
+@keyframes lds-ripple {
+    0% {
+        top: 36px;
+        left: 36px;
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+    100% {
+        top: 0px;
+        left: 0px;
+        width: 72px;
+        height: 72px;
+        opacity: 0;
+    }
 }
