@@ -19405,7 +19405,6 @@ document.getElementById("searchSubmit").onclick = function () {
 
   if (type == "0") {
     document.querySelector('#custom-error-alert').classList.add("in");
-    alert();
     setTimeout(function () {
       document.querySelector('#custom-error-alert').classList.remove("in");
     }, 3000);
@@ -19436,7 +19435,8 @@ document.getElementById("searchSubmit").onclick = function () {
   }
 
   var radius = document.getElementById('radius').value;
-  var formatted_address = document.getElementById('formatted-address').value; // type , radius
+  var formatted_address = encodeURI(document.getElementById('formatted-address').value);
+  console.log("formatted_address", formatted_address); // type , radius
 
   var url = "api/testnew" + "?lat=" + lat + "&lng=" + lng + "&type=" + type + "&radius=" + radius + "&placeid=" + placeid + "&formattedaddress=" + formatted_address;
   callApi(url);
@@ -19453,6 +19453,11 @@ function callApi(url) {
     document.getElementById("searchSubmit").classList.remove("d-none");
     document.getElementsByClassName("lds-ripple")[0].classList.add("d-none");
     BuildTable(data);
+
+    if (data.results.length == 0) {
+      return;
+    }
+
     document.getElementById("hits").innerHTML = data.results.length + " Treffer!";
 
     if (typeof data.referenz !== "undefined") {
@@ -19469,6 +19474,10 @@ function callApi(url) {
 }
 
 function BuildTable(obj) {
+  if (obj.length == 0) {
+    return;
+  }
+
   Object.entries(obj.results).forEach(function (_ref) {
     var _ref2 = _slicedToArray(_ref, 2),
         key = _ref2[0],

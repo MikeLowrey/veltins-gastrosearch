@@ -18,6 +18,25 @@ class GooglePlacesController extends Controller
      * @var string
      */
     private $google_api_key = "";
+ 
+    /**
+     * Google Places Types of our interesst
+     *
+     * @var array
+     */
+    private $google_places_api_types = [
+        "amusement_park",
+        "bar",
+        "bowling_alley",
+        "cafe",
+        "campground",
+        "lodging",
+        "meal_delivery",
+        "meal_takeaway",
+        "movie_theatre",
+        "night_club",
+        "restaurant"
+    ];
 
     /**
      * Between every google places nearby api call it is useful 
@@ -26,7 +45,7 @@ class GooglePlacesController extends Controller
      * 
      * @var integer
      */
-    private $sleeping_in_seconds = 2;
+    private $sleeping_in_seconds = 1;
 
     private $result_array_set = [];
     
@@ -34,6 +53,7 @@ class GooglePlacesController extends Controller
     {
         $this->google_api_key = env('GOOGLE_MAPS_API_KEY', NULL);        
     }
+
 
     /**
      * Get Places Items. First pass request parameter. then validate them. 
@@ -49,7 +69,7 @@ class GooglePlacesController extends Controller
      * @return Array
      */
     public function test_new(RequestGeoDataForGooglePlacesCall $request): Array 
-    {
+    {        
         $request->validated();
         
         $userLocations = UserLocationRequest::where([
@@ -66,46 +86,93 @@ class GooglePlacesController extends Controller
             ];
             $_data["place_id"] = $request->input("placeid");
             $_data["formatted_address"] = $request->input("formattedaddress");            
-            $_data["type"] = ($request->input("type")) ? $request->input("type") : "bar";
+            $_data["type"] = ($request->input("type")) ? $request->input("type") : "all";
             $_data["radius"] = $request->input("radius");
             // save data
-            $new_userLocations_id = $this->saveUserLocaltionRequest($_data);         
-            
-            // start to call google places api by lat lng type        
-            $places_parameters = [    
-                'type' => $request->input("type"),
-                'lat' => $request->input("lat"),
-                'lng' => $request->input("lng"),
-                'radius' => $request->input("radius"),
-                'type' => $request->input("type"),
-            ];        
-            $_places_items = $this->get_places_data_from_google_api($places_parameters);
-            
-            // iterate $_places_items an insert place_id, request_id to the relation table            
-            foreach($_places_items as $key => $item) {
-                $_placeItem = PlacesItem::where(["place_id"=>$item['place_id']])->first();
-                $delete_item = false;
-                if($_placeItem) {
-                    $delete_item = true;
-                }                
-                DB::table('rel_search_to_places')->insert([
-                    'user_request_id' => $new_userLocations_id, 
-                    'places_id' => $item['place_id']
-                    ]);                
-                if($delete_item) {
-                    unset($_places_items[$key]);
-                }
-            }
-            // call google api details and merge both 
+            $new_userLocations_id = $this->saveUserLocaltionRequest($_data);                     
 
-            if (count($_places_items) > 0)
+            // start to call google places api by lat lng type
+            if ($request->input("type") === 'all') 
             {
-                $_places_items_with_detials = $this->get_google_places_detials_by_place_id( $_places_items );           
-                // store results in databse
-                array_walk($_places_items_with_detials, function($item) {
-                    $this->store_full_dataset( $item );
-                });    
-            }  
+                $_places_items = $_places_items_all = $_places_items_merged = [];                
+                foreach($this->google_places_api_types as $name) {                                   
+                    $places_parameters = [    
+                        'type' => $name,
+                        'lat' => $request->input("lat"),
+                        'lng' => $request->input("lng"),
+                        'radius' => $request->input("radius"),                        
+                    ];                        
+                    // call google places nearby api                        
+                    $_places_items_all[] = $this->get_places_data_from_google_api($places_parameters);                    
+                }                
+                $_places_items_merged = call_user_func_array('array_merge', $_places_items_all);
+                $_places_items = $this->helper_array_multi_unique($_places_items_merged);                
+
+                // iterate $_places_items an insert place_id, request_id to the relation table            
+                foreach($_places_items as $key => $item) {
+                    $_placeItem = PlacesItem::where(["place_id"=>$item['place_id']])->first();
+                    $delete_item = false;
+                    if($_placeItem) {
+                        $delete_item = true;
+                    }                
+                    DB::table('rel_search_to_places')->insert([
+                        'user_request_id' => $new_userLocations_id, 
+                        'places_id' => $item['place_id']
+                        ]);                
+                    if($delete_item) {
+                        unset($_places_items[$key]);
+                    }
+                }
+
+                // call google api details and merge both 
+                if (count($_places_items) > 0)
+                {
+                    $_places_items_with_detials = $this->get_google_places_detials_by_place_id( $_places_items );           
+                    // store results in databse
+                    array_walk($_places_items_with_detials, function($item) {
+                        $this->store_full_dataset( $item );
+                    });    
+                }                   
+                
+            } else {
+                // start to call google places api by lat lng type        
+                $places_parameters = [    
+                    'type' => $request->input("type"),
+                    'lat' => $request->input("lat"),
+                    'lng' => $request->input("lng"),
+                    'radius' => $request->input("radius"),                
+                ];    
+                // call google places nearby api    
+                $_places_items = $this->get_places_data_from_google_api($places_parameters);
+                
+                // iterate $_places_items an insert place_id, request_id to the relation table            
+                foreach($_places_items as $key => $item) {
+                    $_placeItem = PlacesItem::where(["place_id"=>$item['place_id']])->first();
+                    $delete_item = false;
+                    if($_placeItem) {
+                        $delete_item = true;
+                    }                
+                    DB::table('rel_search_to_places')->insert([
+                        'user_request_id' => $new_userLocations_id, 
+                        'places_id' => $item['place_id']
+                        ]);                
+                    if($delete_item) {
+                        unset($_places_items[$key]);
+                    }
+                }
+                // call google api details and merge both 
+
+                if (count($_places_items) > 0)
+                {
+                    $_places_items_with_detials = $this->get_google_places_detials_by_place_id( $_places_items );           
+                    // store results in databse
+                    array_walk($_places_items_with_detials, function($item) {
+                        $this->store_full_dataset( $item );
+                    });    
+                }  
+
+            }            
+
         }
         
         $_id = isset($userLocations->id) ? $userLocations->id : $new_userLocations_id;
@@ -114,22 +181,26 @@ class GooglePlacesController extends Controller
             "results" => $this->get_place_items_by_request_id($_id),
             "referenz" => $_id
         ];
-    }
+    }    
 
     /**
      * Get Place Items by user request id. the user request id referenz to 
      * google maps search id place_id.
      *
      * @param Int $_id
-     * @return Object
+     * @return Array
      */
-    private function get_place_items_by_request_id(Int $_id): Object  {
-        return DB::table('rel_search_to_places')
+    private function get_place_items_by_request_id(Int $_id):array  {
+        $_items = DB::table('rel_search_to_places')
             ->join('places_items', 'places_items.place_id', '=', 'rel_search_to_places.places_id')
             ->where(["rel_search_to_places.user_request_id" => $_id ])
             ->select('places_items.*')
-            ->get();        
-    }
+            ->get();
+
+        // clear array from doubles
+        $item = $this->helper_array_multi_unique($_items);
+        return $item;
+    } 
 
     /**
      * Finaly store the crawled dataset in the database
@@ -143,7 +214,7 @@ class GooglePlacesController extends Controller
         if(true === PlacesItem::where([
             "place_id" => $full_dataset["place_id"]
             ])->exists()) {
-                echo '<p>store full:' . $full_dataset["place_id"] . '</p>';
+                // echo '<p>store full:' . $full_dataset["place_id"] . '</p>';
             return ;
         }
         $new_item = new PlacesItem();
@@ -236,6 +307,7 @@ class GooglePlacesController extends Controller
 
     /**
      * Get geodata by location name. For Example: "Olsberg" or "59939"
+     * Call the Google Maps geocode Api.
      *
      * @param Request $request
      * @return Array
@@ -286,7 +358,7 @@ class GooglePlacesController extends Controller
         if ( null !== $request['type'] ) {
             $type = $request['type'];
         } else {
-            $type = "restaurant";
+            $type = "bar";
         }
         $radius = isset($request['radius']) ? $request['radius'] : 1500;
 
@@ -332,4 +404,39 @@ class GooglePlacesController extends Controller
         $userLocaltionRequest->save();       
         return $userLocaltionRequest->id;
     }
+
+    /**
+     * Set Sleepingtime between the google nearby places api calls
+     * to avoid an google error
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function set_sleeping_in_seconds(Request $request): void
+    {
+        if ($request->secounds < 1) {
+            $this->sleeping_in_seconds = 1;
+        }
+        if ($request->secounds > 5) {
+            $this->sleeping_in_seconds = 5;
+        }        
+        $this->sleeping_in_seconds = $request->secounds;
+    }
+
+    /**
+     * array_unique() für multidimensionale Arrays
+     *
+     * @param [type] $multiArray
+     * @return array
+     */
+    function helper_array_multi_unique($multiArray): array
+    {
+        $uniqueArray = array();        
+        foreach($multiArray as $subArray){          
+          if(!in_array($subArray, $uniqueArray)){            
+            $uniqueArray[] = $subArray;
+          }
+        }
+        return $uniqueArray;
+    }       
 }

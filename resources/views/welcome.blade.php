@@ -19,9 +19,10 @@
                 <div class="row">
                     <!-- was -->
                     <div class="col-12 mb-4">    
-                        <label class="mr-sm-2" for="inlineFormCustomSelect">Type</label>
+                        <label class="mr-sm-2" for="inlineFormCustomSelect">Kategorie</label>
                         <select class="custom-select mr-sm-2" id="type">
                           <option value="0" selected>Bereich wählen...</option>
+                          <option value="all">Alle</option>
                           <option value="amusement_park">Vergnügungspark</option>
                           <option value="bar">Bar</option>
                           <option value="bowling_alley">Bowlingbahn</option>
@@ -50,7 +51,8 @@
                                     <!--option value="">Umkreis</option-->
                                     <option value="1500" selected>+1,5 KM</option>
                                     <option value="5000">+5 KM</option>
-                                    <option value="25000">+20 KM</option>
+                                    <option value="10000">+10 KM</option>
+                                    <option value="20000">+20 KM</option>
                                     <option value="50000">+50 KM</option>
                                 </select>                                 
                             </div>

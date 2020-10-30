@@ -16,7 +16,7 @@ class CreatePlacesItemsTable extends Migration
         Schema::create('places_items', function (Blueprint $table) {
             $table->id();
             $table->string('place_id')->unique();
-            $table->json('location')->nullable();
+            $table->text('location')->nullable();
             $table->string('name')->nullable();
             $table->string('types')->nullable();
             $table->string('place')->nullable();
