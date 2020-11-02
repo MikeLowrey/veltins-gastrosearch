@@ -80,7 +80,7 @@
                   <option value="lodging">Unterkünfte</option>
                   <option value="meal_delivery">Essenlieferung</option>
                   <option value="meal_takeaway">Essen zum Mitnehmen</option>
-                  <option value="movie_theatre">Kino</option>
+                  <option value="movie_theater">Kino</option>
                   <option value="night_club">Nachtclub, Disko</option>
                   <option value="restaurant">Restaurant</option>
                 </select>                
