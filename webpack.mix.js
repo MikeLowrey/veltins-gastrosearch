@@ -17,5 +17,5 @@ mix.js('resources/js/app.js', 'public/js')
     ]);
 
 mix.scripts([
-    'resources/js/myapp.js',
-], 'public/js/all.js');
+    'resources/js/mypages.js',
+], 'public/js/mypages.js');

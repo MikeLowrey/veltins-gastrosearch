@@ -135,3 +135,25 @@ label {
         opacity: 0;
     }
 }
+
+
+/* menu settings */
+
+#menu-content {
+    position: relative;
+}
+
+.settings {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 30px
+}
+
+a .settings {
+    color: white;
+}
+
+a:hover .settings {
+    color: #ffc107;
+}

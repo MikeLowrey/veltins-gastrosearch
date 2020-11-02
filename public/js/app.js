@@ -19453,11 +19453,6 @@ function callApi(url) {
     document.getElementById("searchSubmit").classList.remove("d-none");
     document.getElementsByClassName("lds-ripple")[0].classList.add("d-none");
     BuildTable(data);
-
-    if (data.results.length == 0) {
-      return;
-    }
-
     document.getElementById("hits").innerHTML = data.results.length + " Treffer!";
 
     if (typeof data.referenz !== "undefined") {

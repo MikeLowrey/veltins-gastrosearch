@@ -20,7 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('start/', [App\Http\Controllers\GooglePlacesController::class, 'index']);
 Route::get('getgeodatabyname/', [App\Http\Controllers\GooglePlacesController::class, 'get_geodata_by_name']);
-Route::get('test/', [App\Http\Controllers\GooglePlacesController::class, 'test']);
+// Route::get('test/', [App\Http\Controllers\GooglePlacesController::class, 'test']);
 Route::get('testnew/', [App\Http\Controllers\GooglePlacesController::class, 'test_new']);
 Route::get('searchbyzip/{zip}', [App\Http\Controllers\DatabasePlacesItemsSearchController::class, 'search_by_zip']);
 Route::get('searchbyzip/{zip}/{type}', [App\Http\Controllers\DatabasePlacesItemsSearchController::class, 'search_by_zip_and_type']);

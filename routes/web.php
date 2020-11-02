@@ -21,6 +21,4 @@ Route::get('/download/generate/{zip}/{type}', [App\Http\Controllers\DownloadData
 
 Route::get('download', [App\Http\Controllers\DownloadDataSheetAsExcelController::class, 'test']);
 
-Route::get('/test', function () {
-    return view('test');
-});
+Route::get('statistics/', [App\Http\Controllers\PageController::class, 'test']);

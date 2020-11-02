@@ -9,10 +9,18 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <!-- Google Maps JavaScript library -->
         <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyDlG7DSQ99FNnOb8Z2tH9JpnYfVxsx4jFA"></script>
+        <style>          
+        </style>
+
     </head>
-    <body>        
+    <body>                
         <div class="container-fluid green-bg pt-3">            
-            <div class="container">
+            <div id="menue-content">   
+                <a id="settings" href="/statistics">                    
+                    <svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="chart-bar" class="settings svg-inline--fa fa-chart-bar fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M396.8 352h22.4c6.4 0 12.8-6.4 12.8-12.8V108.8c0-6.4-6.4-12.8-12.8-12.8h-22.4c-6.4 0-12.8 6.4-12.8 12.8v230.4c0 6.4 6.4 12.8 12.8 12.8zm-192 0h22.4c6.4 0 12.8-6.4 12.8-12.8V140.8c0-6.4-6.4-12.8-12.8-12.8h-22.4c-6.4 0-12.8 6.4-12.8 12.8v198.4c0 6.4 6.4 12.8 12.8 12.8zm96 0h22.4c6.4 0 12.8-6.4 12.8-12.8V204.8c0-6.4-6.4-12.8-12.8-12.8h-22.4c-6.4 0-12.8 6.4-12.8 12.8v134.4c0 6.4 6.4 12.8 12.8 12.8zM496 400H48V80c0-8.84-7.16-16-16-16H16C7.16 64 0 71.16 0 80v336c0 17.67 14.33 32 32 32h464c8.84 0 16-7.16 16-16v-16c0-8.84-7.16-16-16-16zm-387.2-48h22.4c6.4 0 12.8-6.4 12.8-12.8v-70.4c0-6.4-6.4-12.8-12.8-12.8h-22.4c-6.4 0-12.8 6.4-12.8 12.8v70.4c0 6.4 6.4 12.8 12.8 12.8z"></path></svg>
+                </a>
+            </div>            
+            <div class="container">                
                 <div class="text-center">
                     <h4><b>Veltins</b> <i style="text-decoration: underline;">Gastrosearch</i></h4>
                 </div>                
@@ -94,6 +102,10 @@
 
         <!-- output container -->
         <div class="container">
+            <div id="setting-container">
+
+            </div>
+
             <p id="hits" class="text-center hits"></p>
             <div id="custom-error-alert" class="alert alert-danger alert-dismissible fade mt-4" >Es gibt noch unstimmigkeiten</div>
             <div>
@@ -118,7 +130,7 @@
                 </tbody>                                    
             </table>
         </div>
-
+        <script></script>
         <script type="text/javascript" src="{{ URL::asset('js/app.js') }}"></script>
         <!--script type="text/javascript" src="{{ URL::asset('js/all.js') }}"></script-->
     </body>
