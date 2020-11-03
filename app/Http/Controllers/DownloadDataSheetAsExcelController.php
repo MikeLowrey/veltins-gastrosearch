@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use \App\Models\PlacesItem;
 use \App\Models\UserLocationRequest;
+use \App\Models\Setting;
 use \App\Exports\PlacesItemsExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
@@ -21,8 +22,14 @@ class DownloadDataSheetAsExcelController extends Controller
      */
     private $file_format = "csv"; //  XLSX
 
-    public function __construct() {}
+    public function __construct() {
+        $file_format = Setting::where(["key"=>"file_format"])->first();
+        $this->file_format = $file_format->value;
+    }
 
+    public function test(Request $request) {
+        return abort(404);   
+    }
     /**
      * Make tablesheet by zip function
      *
@@ -30,11 +37,11 @@ class DownloadDataSheetAsExcelController extends Controller
      * @return object
      */
     public function export_by_zip_and_type(Request $request): object
-    {
+    {        
         if (!preg_match( '/^\d{2}\d{0,3}$/', $request->zip )) {   
             return abort(404);         
             return response(["status"=>"not founded"],422);
-        }   
+        }
         $file_name = $request->zip ."_" . Str::snake($request->type) . ".". $this->file_format;
         
         if ($request->type === 'all') {
@@ -77,6 +84,15 @@ class DownloadDataSheetAsExcelController extends Controller
 
         //ereas all doubles from resultlist
         $collection = $this->helper_array_multi_unique($_collection);
+
+        // filter by type        
+        if ($request->type && $request->type != 'all') {
+            $_type = $request->type;
+            $collection = array_filter($collection, function($item) use ($_type) {                
+                return strpos($item->types, $_type) !== false ? true: false;
+            });                        
+        }       
+
         $export = new PlacesItemsExport($collection);
         return Excel::download($export, $file_name);  
     }  
@@ -106,6 +122,6 @@ class DownloadDataSheetAsExcelController extends Controller
      */
     public function set_file_format(Request $request): void
     {
-        $this->file_format = $request->fileformat;
+        $this->file_format = $request->ext;
     }
 }

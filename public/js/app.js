@@ -19398,6 +19398,29 @@ document.getElementById("zip").oninput = function () {
     document.getElementById('radius').removeAttribute("disabled");
   }
 };
+/*var ext = '';
+document.getElementById("select-ext").onchange = function() {
+    ext = document.getElementById("select-ext").options[document.getElementById("select-ext").options.selectedIndex].value;
+    console.log("ext", ext)
+    console.log("ext", document.getElementById("download-csv").href)
+    if (document.getElementById("download-csv").href.length == 0) {
+        alert();
+    }
+    document.getElementById("select-ext").setAttribute("disabled", "disabled");
+    document.getElementById("download-csv").href = document.getElementById("download-csv").href + "." + ext
+    document.getElementById("download-csv").removeAttribute("disabled");
+}
+*/
+
+/*
+document.getElementById("download-csv").onclick = function() {
+    let link = document.getElementById("download-csv").href;
+    console.log("link", link);
+    location.href = link;
+    return false;
+}
+*/
+
 
 document.getElementById("searchSubmit").onclick = function () {
   var zip = document.getElementById("zip").value;
@@ -19449,21 +19472,24 @@ function callApi(url) {
   fetch(url).then(function (response) {
     return response.json();
   }).then(function (data) {
-    // console.log("data response",data)                    
+    console.log("data response", data);
+    window.t = data;
     document.getElementById("searchSubmit").classList.remove("d-none");
     document.getElementsByClassName("lds-ripple")[0].classList.add("d-none");
     BuildTable(data);
     document.getElementById("hits").innerHTML = data.results.length + " Treffer!";
 
     if (typeof data.referenz !== "undefined") {
-      document.getElementById("download-csv").style.display = "inline";
-      document.getElementById("download-csv").href = "/download/" + data.referenz;
+      // document.getElementById("download-sheet-input").style.display = "block"; // inline
+      document.getElementById("download-csv").classList.remove("d-none");
+      document.getElementById("download-csv").href = "/download/" + data.referenz + "/" + type.value;
     } else if (data.results.length > 0) {
-      document.getElementById("download-csv").style.display = "inline";
+      // document.getElementById("download-sheet-input").style.display = "block"; // inline
+      document.getElementById("download-csv").classList.remove("d-none");
       document.getElementById("download-csv").href = "/download/generate/" + zip.value + "/" + type.value;
       console.log("zip", zip);
     } else {
-      document.getElementById("download-csv").style.display = "none";
+      document.getElementById("download-csv").classList.add("d-none"); //.style.display = "none";
     }
   });
 }

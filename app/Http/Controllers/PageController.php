@@ -9,11 +9,11 @@ use \App\Models\RelSearchToPlace;
 use \App\Http\Requests\RequestGeoDataForGooglePlacesCall;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
-
+use \App\Models\Setting;
 
 class PageController extends Controller
 {
-    public function test() {
+    public function statistics() {
         $data = [
             'name' => '',
             'items_relations' => DB::table('rel_search_to_places')->count(),
@@ -24,6 +24,21 @@ class PageController extends Controller
             ->groupBy('r.id')
             ->get()->all()
         ];
-        return view('settings')->with('data',$data);
+        return view('statistics')->with('data',$data);
     }    
+
+    /**
+     * Settings
+     *
+     * @return View
+     */
+    public function settings(): Object {
+        $data = Setting::all();
+        $versions = shell_exec('git log --pretty=oneline');
+        $pattern = '/[a-f0-9]{40}/i';                
+        $_str = preg_replace($pattern, '###', $versions);
+        $versions = explode('###',$_str);     
+        return view('settings')->with('data',$data)->with('versions',$versions);
+    }
+    
 }

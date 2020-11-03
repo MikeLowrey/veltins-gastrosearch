@@ -26,5 +26,7 @@ Route::get('searchbyzip/{zip}', [App\Http\Controllers\DatabasePlacesItemsSearchC
 Route::get('searchbyzip/{zip}/{type}', [App\Http\Controllers\DatabasePlacesItemsSearchController::class, 'search_by_zip_and_type']);
 Route::get('searchbyplace/', [App\Http\Controllers\GooglePlacesController::class, 'search_by_place']);
 
+// Settings
+Route::put('settings/file_format/{ext}', [App\Http\Controllers\SettingController::class, 'set_file_format']);
 
 

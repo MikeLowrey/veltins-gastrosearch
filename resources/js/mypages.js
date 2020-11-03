@@ -1,14 +1,15 @@
 /**
  * statistics
  */
-var map_is_loaded = false;
-window.onscroll = function() {
-    boundingClientRect = document.getElementById("map").getBoundingClientRect();
-    if (!map_is_loaded && (boundingClientRect.top + (document.getElementById("map").offsetHeight / 2)) < window.innerHeight) {
-        // console.log(boundingClientRect.top)    
-        initMap();
+if (window.location.href.includes("statistics")) {
+    var map_is_loaded = false;
+    window.onscroll = function() {
+        boundingClientRect = document.getElementById("map").getBoundingClientRect();
+        if (!map_is_loaded && (boundingClientRect.top + (document.getElementById("map").offsetHeight / 2)) < window.innerHeight) {
+            initMap();
+        };
     };
-};
+}
 
 function initMap() {
 
@@ -115,7 +116,7 @@ function initMap() {
             fillOpacity: 0.09,
             map,
             center: { lat: Number(JSON.parse(item.location).lat), lng: Number(JSON.parse(item.location).lng) },
-            radius: Math.sqrt(item.radius) * 100,
+            radius: item.radius,
             clickable: true
         });
 
@@ -149,5 +150,35 @@ function initMap() {
             setCircleOnMap(locations[i])
         };
     }
+}
 
+/**
+ * settings
+ */
+function initSettings() {
+    document.getElementById("file-format").onclick = function() {
+        let file_format = document.getElementById("select-file-format").options[document.getElementById("select-file-format").options.selectedIndex].value;
+        callApiForSave('file_format', file_format);
+    }
+
+    function callApiForSave(...data) {
+        console.log(data)
+        if (data.includes("file_format")) {
+            var url = '/api/settings/file_format/' + data[1];
+            var method = 'PUT';
+            fetch(url, { method: method }).then(() => {
+                toast("Dateiformat wurde gespeichert")
+            })
+        }
+    }
+
+    function toast(txt) {
+        var x = document.getElementById("snackbar");
+        x.innerHTML = txt;
+        x.className = "show";
+        setTimeout(function() { x.className = x.className.replace("show", ""); }, 3000);
+    }
+}
+if (window.location.href.includes("settings")) {
+    initSettings();
 }

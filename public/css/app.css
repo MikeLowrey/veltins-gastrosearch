@@ -161,15 +161,15 @@ label {
 
 .settings {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 30px
+    top: 10px;
+    right: 10px;
+    width: 20px
 }
 
-a .settings {
+.settings a {
     color: white;
 }
 
-a:hover .settings {
+.settings a:hover {
     color: #ffc107;
 }

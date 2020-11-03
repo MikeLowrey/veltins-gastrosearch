@@ -55,46 +55,8 @@ class GooglePlacesController extends Controller
     }
 
     public function test() {
-        $data = [
-            'name' => '',
-            'items_relations' => DB::table('rel_search_to_places')->count(),
-            'items_count' => PlacesItem::count(),
-            'user_requests' => DB::table('user_location_requests as r')                
-            ->select('r.*',DB::raw('count(rel.id) as items'))
-            ->join('rel_search_to_places as rel', 'rel.user_request_id', 'r.id')
-            ->groupBy('r.id')
-            ->get()->all()
-        ];
-        return view('settings')->with('data',$data);
-        return DB::table('rel_search_to_places')->count();
-        return PlacesItem::count();
-        // get user request and their counting items
-        return DB::table('user_location_requests as r')                
-        ->select('r.*',DB::raw('count(rel.id) as items'))
-        ->join('rel_search_to_places as rel', 'rel.user_request_id', 'r.id')
-        ->groupBy('r.id')
-        ->get();
-
-
-        // get USer requests
-        return UserLocationRequest::all();
-        // done
-        $request['type'] = 'bar';
-
-        $i = DB::table('rel_search_to_places')
-        ->join('places_items', 'places_items.place_id', '=', 'rel_search_to_places.places_id')
-        ->where([
-            ["rel_search_to_places.user_request_id","=", 6 ],
-            ["places_items.types", "LIKE", "%".$request['type']."%" ]
-        ])
-        ->groupBy('places_items.place_id')
-        ->select('places_items.*')
-        ->get();
-        return [
-            "count"=> count($i), "i"=>$i
-        ];
-       
     }
+    
     /**
      * Get Places Items. First pass request parameter. then validate them. 
      * then check if the request with this place id and type and radius was 
