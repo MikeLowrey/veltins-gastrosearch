@@ -9,5 +9,5 @@ class Setting extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['key'];
+    protected $fillable = ['key','value'];
 }

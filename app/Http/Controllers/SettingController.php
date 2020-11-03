@@ -34,9 +34,17 @@ class SettingController extends Controller
      *
      * @return void
      */
-    public function restore_defaults(): void {
-        Setting::where('key', 'file_format')            
-        ->update(['value' => $this->file_format]);                   
+    protected function restore_defaults(): void 
+    {
+        foreach ($this->defaults as $key => $value) 
+        {
+            Setting::create([
+                'key' => $this->defaults[$key][0],
+                'value' => $this->defaults[$key][1],
+            ]);            
+        }        
+        #Setting::where('key', 'file_format')            
+        #->update(['value' => $this->file_format]);                   
     }
 
     /**
@@ -45,7 +53,7 @@ class SettingController extends Controller
      * @param String $key
      * @return void
      */
-    private function set_defaults_by_key(String $key): void {
+    public function set_defaults_by_key(String $key): void {
         Setting::create([
             'key' => $this->defaults[$key][0],
             'value' => $this->defaults[$key][1],

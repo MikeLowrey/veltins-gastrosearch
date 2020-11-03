@@ -10,8 +10,9 @@ use \App\Http\Requests\RequestGeoDataForGooglePlacesCall;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use \App\Models\Setting;
+use \App\Http\Controllers\SettingController;
 
-class PageController extends Controller
+class PageController extends SettingController
 {
     public function statistics() {
         $data = [
@@ -34,6 +35,11 @@ class PageController extends Controller
      */
     public function settings(): Object {
         $data = Setting::all();
+        if (count($data) === 0) {            
+            $this->restore_defaults();
+            $data = Setting::all();
+        }
+        
         $versions = shell_exec('git log --pretty=oneline');
         $pattern = '/[a-f0-9]{40}/i';                
         $_str = preg_replace($pattern, '###', $versions);
