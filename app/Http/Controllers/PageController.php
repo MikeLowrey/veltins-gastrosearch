@@ -36,6 +36,7 @@ class PageController extends SettingController
             "meal_delivery" =>"Essenlieferung",
             "meal_takeaway" =>"Essen zum Mitnehmen",
             "movie_theater" =>"Kino",
+            "movie_theatre" =>"Kino",
             "night_club"  =>"Nachtclub, Disko",
             "restaurant" =>"Restaurant"
         ];         
