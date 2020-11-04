@@ -25,7 +25,23 @@ class PageController extends SettingController
             ->groupBy('r.id')
             ->get()->all()
         ];
-        return view('statistics')->with('data',$data);
+        $types = [
+            "all" => "Alle",
+            "amusement_park" => "Vergnügungspark",
+            "bar" => "Bar",  
+            "bowling_alley" => "Bowlingbahn",
+            "cafe" => "Café",        
+            "campground" => "Campingplatz",
+            "lodging" => "Unterkünfte",
+            "meal_delivery" =>"Essenlieferung",
+            "meal_takeaway" =>"Essen zum Mitnehmen",
+            "movie_theater" =>"Kino",
+            "night_club"  =>"Nachtclub, Disko",
+            "restaurant" =>"Restaurant"
+        ];         
+        return view('statistics')
+        ->with('data',$data)
+        ->with('types',$types);
     }    
 
     /**
@@ -33,7 +49,7 @@ class PageController extends SettingController
      *
      * @return View
      */
-    public function settings(): Object {
+    public function settings(): Object {        
         $data = Setting::all();
         if (count($data) === 0) {            
             $this->restore_defaults();
@@ -44,7 +60,10 @@ class PageController extends SettingController
         $pattern = '/[a-f0-9]{40}/i';                
         $_str = preg_replace($pattern, '###', $versions);
         $versions = explode('###',$_str);     
-        return view('settings')->with('data',$data)->with('versions',$versions);
+       
+        return view('settings')
+        ->with('data',$data)
+        ->with('versions',$versions);
     }
     
 }

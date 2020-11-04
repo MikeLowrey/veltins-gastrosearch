@@ -52,8 +52,9 @@
                 <thead>
                 <tr>
                     <th>Adresse</th>
-                    <th>Kategorie</th>
-                    <th>Radius</th>
+                    <!--th>Kategorie</th>
+                    <th>Radius</th-->
+                    <th>Kriterien</th>
                     <th>Treffer</th>
                 </tr>
                 </thead>
@@ -64,8 +65,12 @@
                             {{$item->formatted_address}}<br/>                        
                             <small>{{$item->created_at}}</small>
                         </td>
-                        <td>{{$item->type}}</td>
-                        <td>{{$item->radius/1000}} km</td>
+                        <!--td>{{$item->type}}</td>
+                        <td>{{$item->radius/1000}} km</td-->
+                        <td>
+                            {{$types[$item->type]}}<br/>
+                            <small>{{$item->radius/1000}} km</small>
+                        </td>
                         <td>{{$item->items}}</td>
                     </tr>
                 @endforeach            

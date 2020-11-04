@@ -68,7 +68,7 @@ function initMap() {
 
     function bindMassageToMarker(_marker, data) {
         const infowindow = new google.maps.InfoWindow({
-            content: data.radius.toString() + " km",
+            content: "Radius: " + (data.radius / 1000).toString() + " km<br/>gefunden: " + data.items,
         });
         /*
         _marker.addListener("click", () => {
