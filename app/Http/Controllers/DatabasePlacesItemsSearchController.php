@@ -23,7 +23,10 @@ class DatabasePlacesItemsSearchController extends Controller
         
         return response([
             'status' => 'OK',
-            'results' => PlacesItem::where([['zip', 'like', $request->zip.'%']])->get(),            
+            'results' => PlacesItem::where([['zip', 'like', $request->zip.'%']])->get(),   
+            "referenz" => '',
+            "dev_comment" => 'Filter cached Data only by zipcode. Note: Zipcode search allways deliver allways from cache.',
+            "cached_data" => "yes"                        
         ]);        
     }    
 
@@ -48,12 +51,15 @@ class DatabasePlacesItemsSearchController extends Controller
                 ['types', 'like', '%'.$request->type.'%']
             ];
         }        
-        //@todo if nothing found call geolocater and after that call the google places api for possible results   
+        //@todo if no entries found, then call geolocater and after that call the google places api for possible results   
         $collection = PlacesItem::where($types_eloqent_condition)->get();    
 
         return response([
             'status' => 'OK',
-            'results' => $collection
+            'results' => $collection,
+            "referenz" => '',
+            "dev_comment" => 'Filter cached Data by zipcode and type. Note: Zipcode search allways deliver allways from cache.',
+            "cached_data" => "yes"            
         ]);        
     }
 }

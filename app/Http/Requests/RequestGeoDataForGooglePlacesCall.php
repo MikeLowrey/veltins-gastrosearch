@@ -24,7 +24,7 @@ class RequestGeoDataForGooglePlacesCall extends FormRequest
     public function rules()
     {
         return [
-            'placeid' => ['required','max:55','min:10'],
+            'placeid' => ['required','max:191','min:10'],
             'type' => ['required','max:25'],            
             'lat' => ['required','max:20','min:4'],            
             'lng' => ['required','max:20','min:4'],            

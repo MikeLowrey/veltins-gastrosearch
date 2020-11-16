@@ -34,13 +34,24 @@
                         <span class="input-group-text">Format</span>
                       </div>                
                     <select class="custom-select" id="select-file-format">                                          
-                        <option {{$data[0]->value == 'csv' ? 'selected' : ''}} value="csv" >CSV</option>
-                        <option {{$data[0]->value == 'xlsx' ? 'selected' : ''}} value="xlsx">Excel</option>                  
+                        <option {{$data['file_format'] == 'csv' ? 'selected' : ''}} value="csv" >CSV</option>
+                        <option {{$data['file_format'] == 'xlsx' ? 'selected' : ''}} value="xlsx">Excel</option>                  
                     </select>                     
                     <div class="input-group-append">
                       <button class="btn btn-warning" id="file-format" type="button">speichern</button>                      
                     </div>                    
                 </div>                  
+                <br/>
+                <label class="mr-sm-2" for="inlineFormCustomSelect">Wie lange sollen die Google Places Daten bei uns in der Datenbank liegen? Legen Sie hier die Cache Dauer in Tagen fest. </label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Tage</span>
+                      </div>                
+                    <input class="form-control" id="input-cache-duration" value="{{$data['cache_duration']}}" type="number">       
+                    <div class="input-group-append">
+                      <button class="btn btn-warning" id="cache-duration" type="button">speichern</button>                      
+                    </div>                    
+                </div>                 
 
             </div>
         </div>

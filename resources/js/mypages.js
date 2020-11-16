@@ -157,8 +157,13 @@ function initMap() {
  */
 function initSettings() {
     document.getElementById("file-format").onclick = function() {
-        let file_format = document.getElementById("select-file-format").options[document.getElementById("select-file-format").options.selectedIndex].value;
-        callApiForSave('file_format', file_format);
+        let value = document.getElementById("select-file-format").options[document.getElementById("select-file-format").options.selectedIndex].value;
+        callApiForSave('file_format', value);
+    }
+
+    document.getElementById("cache-duration").onclick = function() {
+        let value = document.getElementById("input-cache-duration").value;
+        callApiForSave('cache_duration', value);
     }
 
     function callApiForSave(...data) {
@@ -168,6 +173,13 @@ function initSettings() {
             var method = 'PUT';
             fetch(url, { method: method }).then(() => {
                 toast("Dateiformat wurde gespeichert")
+            })
+        }
+        if (data.includes("cache_duration")) {
+            var url = '/api/settings/cache_duration/' + data[1];
+            var method = 'PUT';
+            fetch(url, { method: method }).then(() => {
+                toast("Cache Dauer wurde gespeichert")
             })
         }
     }

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
 Route::get('download/{id}/{type?}', [App\Http\Controllers\DownloadDataSheetAsExcelController::class, 'export']);
 Route::get('/download/generate/{zip}/{type}', [App\Http\Controllers\DownloadDataSheetAsExcelController::class, 'export_by_zip_and_type']);
@@ -23,3 +23,5 @@ Route::get('download', [App\Http\Controllers\DownloadDataSheetAsExcelController:
 
 Route::get('statistics/', [App\Http\Controllers\PageController::class, 'statistics']);
 Route::get('settings/', [App\Http\Controllers\PageController::class, 'settings']);
+
+// Route::get('test/', [App\Http\Controllers\GooglePlacesController::class, 'test']);

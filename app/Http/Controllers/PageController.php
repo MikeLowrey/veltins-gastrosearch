@@ -50,13 +50,17 @@ class PageController extends SettingController
      *
      * @return View
      */
-    public function settings(): Object {        
+    public function settings(): Object {                
         $data = Setting::all();
-        if (count($data) === 0) {            
+        if (count($data) != count($this->defaults)) {            
             $this->restore_defaults();
             $data = Setting::all();
         }
-        
+        $r = [];        
+        foreach($data as $k => $v) {
+            $r[$v['key']] = $v['value'];
+        }                
+        $data = $r;
         $versions = shell_exec('git log --pretty=oneline');
         $pattern = '/[a-f0-9]{40}/i';                
         $_str = preg_replace($pattern, '###', $versions);

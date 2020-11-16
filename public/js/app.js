@@ -19461,7 +19461,7 @@ document.getElementById("searchSubmit").onclick = function () {
   var formatted_address = encodeURI(document.getElementById('formatted-address').value);
   console.log("formatted_address", formatted_address); // type , radius
 
-  var url = "api/testnew" + "?lat=" + lat + "&lng=" + lng + "&type=" + type + "&radius=" + radius + "&placeid=" + placeid + "&formattedaddress=" + formatted_address;
+  var url = "api/call" + "?lat=" + lat + "&lng=" + lng + "&type=" + type + "&radius=" + radius + "&placeid=" + placeid + "&formattedaddress=" + formatted_address;
   callApi(url);
   return false;
 };
@@ -19509,9 +19509,9 @@ function BuildTable(obj) {
     var cell1 = row.insertCell(0);
     var cell2 = row.insertCell(1);
     var cell3 = row.insertCell(2);
-    cell1.innerHTML = value.name.substring(0, 40);
+    cell1.innerHTML = value.name.substring(0, 40) + "<br/><small>Stand: ".concat(value.updated_at, "</small>");
     cell2.innerHTML = "".concat(value.street, " ").concat(value.street_number, ", ").concat(value.zip, " ").concat(value.place);
-    cell3.innerHTML = value.phone;
+    cell3.innerHTML = "".concat(value.phone, " <br/>").concat(value.website != null ? value.website : '');
   });
 }
 

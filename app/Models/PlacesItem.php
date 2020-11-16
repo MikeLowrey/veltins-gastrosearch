@@ -9,12 +9,13 @@ class PlacesItem extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
     /**
      * The attributes that should be casted to native types.
      *
      * @var array
      */
     protected $casts = [
-        'location' => 'array',
+        #'location' => 'array',
     ];    
 }

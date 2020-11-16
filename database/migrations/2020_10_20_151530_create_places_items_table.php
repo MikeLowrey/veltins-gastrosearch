@@ -26,6 +26,7 @@ class CreatePlacesItemsTable extends Migration
             $table->string('country')->nullable();
             $table->string('phone')->nullable();
             $table->string('website')->nullable();   
+            $table->string('business_status')->nullable();
             $table->string('formatted_address')->nullable();               
             $table->integer('user_ratings_total')->default(0);                           
             $table->timestamps();
