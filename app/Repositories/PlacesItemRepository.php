@@ -253,8 +253,15 @@ class PlacesItemRepository {
     {   
         // start to call google places api by lat lng type and updated the cache
         if ('all' === $request->input("type")) {
-            // @TODO write the loop for all
-            return [];
+            // @TODO write the loop for all            
+            return [
+                "status"=> "OK", 
+                "results" => $this->get_place_items_by_request_id($userLocations['id']),
+                "referenz" => $_id,
+                "dev_comment" => 'Cached data but not updated by request with type all. @todo',
+                "cached_data" => "yes"
+            ];               
+
             $_places_items = $_places_items_all = $_places_items_merged = [];                
             foreach($this->google_places_api_types as $name) {
                 $places_parameters = [    
