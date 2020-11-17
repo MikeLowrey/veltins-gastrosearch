@@ -27,7 +27,8 @@ class GooglePlacesController extends Controller
      *
      * @return void
      */
-    public function test() {
+    public function test(Request $req) {
+        // dd($req->test);
     }
 
     /**

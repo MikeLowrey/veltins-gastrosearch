@@ -9,6 +9,7 @@ use App\Models\PlacesItem;
 use App\Models\RelSearchToPlace;
 use App\Models\Setting;
 use App\Models\UserLocationRequest;
+use App\Repositories\GooglePlacesRepository;
 
 class PlacesItemRepository {
 
@@ -79,7 +80,7 @@ class PlacesItemRepository {
 
     public function getPlacesItemsByParams(Request $request) {        
         $request->validated();
-        
+
         $userLocations = UserLocationRequest::where([
             ["place_id","=",$request->input("placeid")],
             ["type", "=", $request->input("type")],
@@ -128,6 +129,7 @@ class PlacesItemRepository {
         ];            
     }
 
+    
     /**
      * startNewLocationSearch
      *
@@ -145,99 +147,55 @@ class PlacesItemRepository {
         $_data["radius"] = $request->input("radius");
         // create new UserLocationRequest
         $new_userLocations_id = $this->saveUserLocaltionRequest($_data);                     
-
-        // start to call google places api by lat lng type
-        if ('all' === $request->input("type")) 
-        {
-            $_places_items = $_places_items_all = $_places_items_merged = [];                
-            foreach($this->google_places_api_types as $name) {                                   
-                $places_parameters = [    
-                    'type' => $name,
-                    'lat' => $request->input("lat"),
-                    'lng' => $request->input("lng"),
-                    'radius' => $request->input("radius"),                        
-                ];                        
-                // call google places nearby api                        
-                $_places_items_all[] = $this->get_places_data_from_google_api($places_parameters);                    
-            }                
-            $_places_items_merged = call_user_func_array('array_merge', $_places_items_all);
-            $_places_items = $this->helper_array_multi_unique($_places_items_merged);                
-
-            // iterate $_places_items an insert place_id, request_id to the relation table            
-            foreach($_places_items as $key => $item) {
-                $_placeItem = PlacesItem::where(["place_id"=>$item['place_id']])->first();
-                $delete_item = false;
-                if($_placeItem) {
-                    $delete_item = true;
-                }                
-                DB::table('rel_search_to_places')->insert([
-                    'user_request_id' => $new_userLocations_id, 
-                    'places_id' => $item['place_id']
-                    ]);                
-                if($delete_item) {
-                    unset($_places_items[$key]);
-                }
-            }
-
-            // call google api details and merge both 
-            if (count($_places_items) > 0)
-            {
-                $_places_items_with_details = $this->get_google_places_details_by_place_id( $_places_items );           
-                // store results in databse
-                array_walk($_places_items_with_details, function($item) {
-                    $this->store_full_dataset( $item );
-                });    
-            }                   
-            
-        } else {
-            // start to call google places api by lat lng type        
+        
+        $types = $request->type === 'all' ? $this->google_places_api_types : [$request->type];        
+        $_places_items = $_places_items_all = $_places_items_merged = [];                
+        foreach($types as $name) {                                   
             $places_parameters = [    
-                'type' => $request->input("type"),
+                'type' => $name,
                 'lat' => $request->input("lat"),
                 'lng' => $request->input("lng"),
-                'radius' => $request->input("radius"),                
-            ];    
-            // call google places nearby api    
-            $_places_items = $this->get_places_data_from_google_api($places_parameters);
-            
-            // iterate $_places_items an insert place_id, request_id to the relation table            
-            foreach($_places_items as $key => $item) {
-                $_placeItem = PlacesItem::where(["place_id"=>$item['place_id']])->first();
-                $delete_item = false;
-                if($_placeItem) {
-                    $delete_item = true;
-                }                
+                'radius' => $request->input("radius"),                        
+            ];                        
+            // call google places nearby api                        
+            $_places_items_all[$name] = $this->get_places_data_from_google_api($places_parameters);                    
+        }            
+        
+        $_places_items_merged = call_user_func_array('array_merge', $_places_items_all);        
+        $_places_items = $this->helper_array_multi_unique($_places_items_merged);       
+        
+        // iterate $_places_items an insert place_id, request_id to the relation table            
+        foreach($_places_items as $key => $item) {
+            $_placeItem = PlacesItem::where(["place_id"=>$item['place_id']])->first();
+            $delete_item = false;
+            if($_placeItem) {
+                $delete_item = true;
+            }   
+            if ($delete_item) {
+                unset($_places_items[$key]);                
+            }               
+            RelSearchToPlace::firstOrCreate([
+                'user_request_id' => $new_userLocations_id,
+                'places_id' => $item['place_id']
+                ]); 
+        }    
 
-                $rel_search_to_place = new RelSearchToPlace;
-                $rel_search_to_place->user_request_id = $new_userLocations_id;
-                $rel_search_to_place->places_id = $item['place_id'];
-                $rel_search_to_place->save();
-
-                if($delete_item) {
-                    unset($_places_items[$key]);
-                }
-            }
-            // call google api details and merge both 
-
-            if (count($_places_items) > 0)
-            {
-                $_places_items_with_details = $this->get_google_places_details_by_place_id( $_places_items );           
-                // store results in databse
-                array_walk($_places_items_with_details, function($item) {
-                    $this->store_full_dataset( $item );
-                });    
-            }  
-
-        }
-        $_id = $new_userLocations_id;
+        // call google api details and merge both 
+        if (count($_places_items) > 0)
+        {
+            $_places_items_with_details = $this->get_google_places_details_by_place_id( $_places_items );           
+            // store results in databse
+            array_walk($_places_items_with_details, function($item) {
+                $this->store_full_dataset( $item );
+            });    
+        }               
         return [
             "status"=> "OK", 
-            "results" => $this->get_place_items_by_request_id($_id),
-            "referenz" => $_id,
+            "results" => $this->get_place_items_by_request_id($new_userLocations_id),
+            "referenz" => $new_userLocations_id,
             "dev_comment" => 'New data catched from latest google places api call.',
             "cached_data" => "no"
-        ];                    
-    
+        ];    
     }    
 
     /**
@@ -252,38 +210,24 @@ class PlacesItemRepository {
         Object $userLocations ) : Array
     {   
         // start to call google places api by lat lng type and updated the cache
-        if ('all' === $request->input("type")) {
-            // @TODO write the loop for all            
-            return [
-                "status"=> "OK", 
-                "results" => $this->get_place_items_by_request_id($userLocations['id']),
-                "referenz" => $_id,
-                "dev_comment" => 'Cached data but not updated by request with type all. @todo',
-                "cached_data" => "yes"
-            ];               
+        $types = $request->type === 'all' ? $this->google_places_api_types : [$request->type]; 
+        $_places_items = $_places_items_all = $_places_items_merged = [];                
+        foreach($types as $name) {
+            $places_parameters = [    
+                'type' => $name,
+                'lat' => $request->input("lat"),
+                'lng' => $request->input("lng"),
+                'radius' => $request->input("radius"),                        
+            ];                        
+            // call google places nearby api                        
+            $_places_items_all[] = $this->get_places_data_from_google_api($places_parameters);                    
+        }  
+        $_places_items_merged = call_user_func_array('array_merge', $_places_items_all);        
+        $_places_items = $this->helper_array_multi_unique($_places_items_merged);  
 
-            $_places_items = $_places_items_all = $_places_items_merged = [];                
-            foreach($this->google_places_api_types as $name) {
-                $places_parameters = [    
-                    'type' => $name,
-                    'lat' => $request->input("lat"),
-                    'lng' => $request->input("lng"),
-                    'radius' => $request->input("radius"),                        
-                ];                        
-                // call google places nearby api                        
-                $_places_items_all[] = $this->get_places_data_from_google_api($places_parameters);                    
-            }       
-        }
-        
-        $places_parameters = [    
-            'type' => $request->input("type"),
-            'lat' => $request->input("lat"),
-            'lng' => $request->input("lng"),
-            'radius' => $request->input("radius"),                
-        ];            
-        // call google places nearby api    
-        $_places_items = $this->get_places_data_from_google_api($places_parameters);
-        
+        #echo '<p>#1:'.count($_places_items_all).'</p>';
+        #echo '<p>#2:'.count($_places_items_merged).'</p>';
+        #echo '<p>#3:'.count($_places_items).'</p>';
         // iterate $_places_items an insert place_id, request_id to the relation table            
         foreach($_places_items as $key => $item) {
             $_placeItem = PlacesItem::where(["place_id"=>$item['place_id']])->first();
@@ -298,11 +242,11 @@ class PlacesItemRepository {
                     $delete_item = true;
                 }                                                                              
                 // refresh the updated_at field in the relationSearchToPlace row
-                $relSearchToPlaceModel = RelSearchToPlace::where([
-                    ['user_request_id','=',$userLocations->id],
-                    ['places_id','=',$item['place_id']]
-                ])->first();                                        
-                $relSearchToPlaceModel->touch();                
+                RelSearchToPlace::updateOrCreate(
+                    ['user_request_id' => $userLocations->id,
+                    'places_id' => $item['place_id']]
+                )->touch();                                
+    
                 if($delete_item) {
                     unset($_places_items[$key]);                    
                     continue;
@@ -314,30 +258,29 @@ class PlacesItemRepository {
                     ["name","rating","formatted_phone_number","website","address_component","adr_address","formatted_address","business_status"], 
                     true
                 );
-                // store results in databse
-                array_walk($_places_item_with_details, function($full_dataset) use ($request) {                            
-                    $p = PlacesItem::updateOrCreate(
-                        [ 'place_id' => $full_dataset['place_id'] ],
-                        [
-                            'name' => $full_dataset["name"],
-                            'types' => implode(",",$full_dataset["types"]),
-                            'location' => $full_dataset["geometry"]["location"],
-                            'place' => $full_dataset["place"],
-                            'zip' => $full_dataset["zip"],
-                            'street' => $full_dataset["street"],
-                            'street_number' => $full_dataset["street_number"],
-                            'country' => $full_dataset["country"],
-                            'phone' => $full_dataset["phone"],
-                            'website' => $full_dataset["website"],
-                            'formatted_address' => $full_dataset["formatted_address"],
-                            'user_ratings_total' => isset($full_dataset["user_ratings_total"]) ? $full_dataset["user_ratings_total"] : 0                                    
-                        ]
-                    );
-                    if ( !$p->getChanges() ) {                                
-                        echo '<pre>array_walk';print_r("noc changes");echo'</pre>';
-                        $p->touch();                                
-                    }                                
-                });                            
+                // store results in databse @todo put it in an seperated fn()                               
+                $full_dataset = $_places_item_with_details[0];
+                $p = PlacesItem::updateOrCreate(
+                    [ 'place_id' => $full_dataset['place_id'] ],
+                    [
+                        'name' => $full_dataset["name"],
+                        'types' => implode(",",$full_dataset["types"]),
+                        'location' => $full_dataset["geometry"]["location"],
+                        'place' => $full_dataset["place"],
+                        'zip' => $full_dataset["zip"],
+                        'street' => $full_dataset["street"],
+                        'street_number' => $full_dataset["street_number"],
+                        'country' => $full_dataset["country"],
+                        'phone' => $full_dataset["phone"],
+                        'website' => $full_dataset["website"],
+                        'formatted_address' => $full_dataset["formatted_address"],
+                        'user_ratings_total' => isset($full_dataset["user_ratings_total"]) ? $full_dataset["user_ratings_total"] : 0                                    
+                    ]
+                );
+                if ( !$p->getChanges() ) {                                
+                    echo '<pre>array_walk';print_r("noc changes");echo'</pre>';
+                    $p->touch();                                
+                }
 
             } else {
                 // create new PlacesItem Entrie
@@ -381,11 +324,7 @@ class PlacesItemRepository {
         sleep($this->sleeping_in_seconds);        
         $pagetoken = $type = "";
         $pagetoken = isset($request['pagetoken']) ? $request['pagetoken'] : null;
-        if ( null !== $request['type'] ) {
-            $type = $request['type'];
-        } else {
-            $type = "bar";
-        }
+        $type = ( null !== $request['type'] ) ? $request['type'] : 'bar';        
         $radius = isset($request['radius']) ? $request['radius'] : 1500;
 
         $response = [];   
@@ -439,7 +378,7 @@ class PlacesItemRepository {
                 ])->exists() ) 
             {
                 if (!$is_cached_duration_time_expired) {
-                    echo "<p>".$item["place_id"]."</p>";
+                    #echo "<p>".$item["place_id"]."</p>";
                     continue;
                 }
             }
