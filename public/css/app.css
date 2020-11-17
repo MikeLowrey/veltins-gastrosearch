@@ -45,6 +45,36 @@
 
 body {}
 
+a.nav-brand-link,
+a.nav-brand-link:hover,
+a.nav-brand-link:link {
+    color: #096C30;
+    text-decoration: none;
+}
+
+
+/**
+* navbar icon links
+*/
+
+.nava a {
+    text-decoration: none;
+}
+
+
+/**
+* gmap
+*/
+
+#map {
+    height: 600px;
+    width: 100%;
+}
+
+.gm-style-iw>button {
+    display: none !important;
+}
+
 .green-bg {
     background-color: #096C30;
     color: white;
@@ -92,7 +122,7 @@ label {
 }
 
 .hits {
-    color: #4d90fe;
+    color: #fff;
     font-weight: lighter;
     font-size: 12px;
 }
@@ -150,28 +180,6 @@ label {
         height: 72px;
         opacity: 0;
     }
-}
-
-
-/* menu settings */
-
-#menu-content {
-    position: relative;
-}
-
-.settings {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 20px
-}
-
-.settings a {
-    color: white;
-}
-
-.settings a:hover {
-    color: #ffc107;
 }
 
 
@@ -241,4 +249,135 @@ label {
         bottom: 0;
         opacity: 0;
     }
+}
+
+
+/**
+* dual form style
+*/
+
+.veltins-form-1 {
+    padding: 2%;
+    background: #096C30;
+    box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
+}
+
+.veltins-form-1 h3 {
+    text-align: center;
+    margin-bottom: 12%;
+    color: #fff;
+}
+
+.veltins-form-1 label {
+    color: white;
+}
+
+.veltins-form-2 label {
+    color: #096C30;
+}
+
+.veltins-form-2 {
+    padding: 2%;
+    background: #f1f1f1;
+    box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
+}
+
+.veltins-form-2 h3 {
+    text-align: center;
+    margin-bottom: 12%;
+    color: #096C30;
+}
+
+.btnSubmit {
+    font-weight: 600;
+    width: 50%;
+    color: #282726;
+    background-color: #fff;
+    border: none;
+    border-radius: 1.5rem;
+    padding: 2%;
+}
+
+.sortable {
+    cursor: pointer;
+}
+
+
+/* Popup container - can be anything you want */
+
+.popup {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+
+/* The actual popup */
+
+.popup .popuptext {
+    visibility: hidden;
+    width: 160px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -80px;
+}
+
+
+/* Popup arrow */
+
+.popup .popuptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+
+/* Toggle this class - hide and show the popup */
+
+.popup .show {
+    visibility: visible;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s;
+}
+
+
+/* Add animation (fade in the popup) */
+
+@-webkit-keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.info-icon {
+    width: 20px;
+    color: #ccc
 }

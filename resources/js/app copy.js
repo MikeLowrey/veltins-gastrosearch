@@ -1,4 +1,4 @@
-// require('./bootstrap');
+require('./bootstrap');
 
 var searchInput = 'location';
 autocomplete = new google.maps.places.Autocomplete((document.getElementById(searchInput)), {
@@ -27,12 +27,9 @@ document.getElementById('location').onchange = function() {
 document.getElementById('location').oninput = function() {
     if (document.getElementById('location').value.length == 0) {
         document.getElementById("zip").removeAttribute("disabled");
-        document.getElementById("type1").removeAttribute("disabled");
     } else {
         document.getElementById("zip").setAttribute("disabled", "disabled");
         document.getElementById("zip").value = "";
-        document.getElementById("type1").setAttribute("disabled", "disabled");
-        document.getElementById("type1").selectedIndex = "0";
     }
 }
 
@@ -41,36 +38,12 @@ document.getElementById("zip").oninput = function() {
         document.getElementById('location').setAttribute("disabled", "disabled");
         document.getElementById("location").value = "";
         document.getElementById('radius').setAttribute("disabled", "disabled");
-        document.getElementById('type2').setAttribute("disabled", "disabled");
-        document.getElementById("type2").selectedIndex = "0";
 
     } else {
         document.getElementById('location').removeAttribute("disabled");
         document.getElementById('radius').removeAttribute("disabled");
-        document.getElementById('type2').removeAttribute("disabled", "disabled");
     }
-}
 
-document.getElementById('type1').oninput = function() {
-    if (document.getElementById("type1").options.selectedIndex !== 0) {
-        document.getElementById("location").setAttribute("disabled", "disabled");
-        document.getElementById("radius").setAttribute("disabled", "disabled");
-        document.getElementById("type2").setAttribute("disabled", "disabled");
-    } else {
-        document.getElementById("location").removeAttribute("disabled");
-        document.getElementById("radius").removeAttribute("disabled");
-        document.getElementById("type2").removeAttribute("disabled");
-    }
-}
-
-document.getElementById('type2').oninput = function() {
-    if (document.getElementById("type2").options.selectedIndex !== 0) {
-        document.getElementById("zip").setAttribute("disabled", "disabled");
-        document.getElementById("type1").setAttribute("disabled", "disabled");
-    } else {
-        document.getElementById("zip").removeAttribute("disabled");
-        document.getElementById("type1").removeAttribute("disabled");
-    }
 }
 
 /*var ext = '';
@@ -98,12 +71,7 @@ document.getElementById("download-csv").onclick = function() {
 
 document.getElementById("searchSubmit").onclick = function() {
     var zip = document.getElementById("zip").value;
-    if (zip.length >= 2) {
-        var type = document.getElementById("type1").options[document.getElementById("type1").options.selectedIndex].value;
-    } else {
-        var type = document.getElementById("type2").options[document.getElementById("type2").options.selectedIndex].value;
-    }
-
+    var type = document.getElementById("type").options[document.getElementById("type").options.selectedIndex].value;
 
     if (type == "0") {
         document.querySelector('#custom-error-alert').classList.add("in")
@@ -158,14 +126,14 @@ function callApi(url) {
             document.getElementsByClassName("lds-ripple")[0].classList.add("d-none");
             BuildTable(data);
             document.getElementById("hits").innerHTML = data.results.length + " Treffer!";
-            if (typeof data.referenz !== "undefined" && data.referenz !== '') {
+            if (typeof data.referenz !== "undefined") {
                 // document.getElementById("download-sheet-input").style.display = "block"; // inline
                 document.getElementById("download-csv").classList.remove("d-none");
-                document.getElementById("download-csv").href = "/download/" + data.referenz + "/" + type2.value;
-            } else if (data.results.length > 0 && data.referenz == '') {
+                document.getElementById("download-csv").href = "/download/" + data.referenz + "/" + type.value;
+            } else if (data.results.length > 0) {
                 // document.getElementById("download-sheet-input").style.display = "block"; // inline
                 document.getElementById("download-csv").classList.remove("d-none");
-                document.getElementById("download-csv").href = "/download/generate/" + zip.value + "/" + type1.value;
+                document.getElementById("download-csv").href = "/download/generate/" + zip.value + "/" + type.value;
                 console.log("zip", zip);
             } else {
                 document.getElementById("download-csv").classList.add("d-none"); //.style.display = "none";
@@ -180,24 +148,14 @@ function BuildTable(obj) {
         return;
     }
     Object.entries(obj.results).forEach(([key, value]) => {
-        let time = new Date(value.updated_at);
-        let timeString = time.getDate() + '.' + (time.getUTCMonth() + 1) + '.' + time.getUTCFullYear();
         let table = document.getElementById("myTable").getElementsByTagName('tbody')[0];
         let row = table.insertRow();
         let cell1 = row.insertCell(0);
         let cell2 = row.insertCell(1);
         let cell3 = row.insertCell(2);
-        let cell4 = row.insertCell(3);
-        let cell5 = row.insertCell(4);
-        let cell6 = row.insertCell(5);
-        cell1.innerHTML = value.name.substring(0, 40);
-        cell2.innerHTML = `${value.street} ${value.street_number}`;
-        cell3.innerHTML = `${value.zip}`;
-        cell4.innerHTML = `${value.place}`;
-        cell5.innerHTML = `${value.phone !== null? value.phone : '-'}`;
-        cell6.innerHTML = `<span class="popup" onclick="showPopUp(${value.id})"><svg class="info-icon" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="info-circle" class="svg-inline--fa fa-info-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"></path></svg>
-        <span class="popuptext" id="popup-${value.id}">Gecrawlt</br>${timeString}</span>
-      </span>`
+        cell1.innerHTML = value.name.substring(0, 40) + `<br/><small>Stand: ${value.updated_at}</small>`;
+        cell2.innerHTML = `${value.street} ${value.street_number}, ${value.zip} ${value.place}`;
+        cell3.innerHTML = `${value.phone} <br/>${value.website != null? value.website : ''}`;
     });
 }
 

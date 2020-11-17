@@ -107,6 +107,7 @@ class PlacesItemRepository {
             ["radius", "=", $request->input("radius")]
         ])->first(); 
         if (!$userLocations && $isSimilarUserLocationRequestWithTypeAll) {
+            // @todo add an new search
             return $this->getDataByTypeFromCachedDataWhereCrawledByTypeAll(
                 $request, 
                 $isSimilarUserLocationRequestWithTypeAll);
