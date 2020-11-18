@@ -62,6 +62,12 @@
                         <label for="zip">PLZ</label>
                         <input type="text" class="form-control" id="zip" placeholder="PLZ" required autocomplete="off">                                                
                     </div>
+                    <div class="row justify-content-center">
+                        <div class="form-group ">
+                            <button type="button" class="btn btn-secondary btn-lg" id="searchSubmit-1">Suche</button>                        
+                            <div class="lds-ripple d-none"><div></div><div></div></div>                                                
+                        </div>
+                    </div>                      
                 
             </div>
             <div class="col-md-6 veltins-form-2">
@@ -105,16 +111,16 @@
                     <input type="hidden" name="loc_longitude" id="longitude" value="">
                     <input type="hidden" name="place_id" id="place-id" value="">
                     <input type="hidden" name="formatted-address" id="formatted-address" value="">
+                    <div class="row justify-content-center">
+                        <div class="form-group ">
+                            <button type="button" class="btn btn-outline-secondary btn-lg" id="searchSubmit-2">Suche</button>                        
+                            <div class="lds-ripple d-none"><div></div><div></div></div>                                                
+                        </div>
+                    </div>                      
 
                 
             </div>
-            <div class="col-md-12 mt-4">
-                <div class="row justify-content-center">
-                    <div class="form-group ">
-                        <button type="button" class="btn btn-outline-secondary btn-lg" id="searchSubmit">Suche</button>                        
-                        <div class="lds-ripple d-none"><div></div><div></div></div>                                                
-                    </div>
-                </div>                
+            <div class="col-md-12 mt-4">               
             </div>
         </div>
     </div>

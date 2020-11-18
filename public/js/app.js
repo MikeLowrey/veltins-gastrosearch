@@ -212,7 +212,8 @@ document.getElementById("download-csv").onclick = function() {
 */
 
 
-document.getElementById("searchSubmit").onclick = function () {
+document.getElementById("searchSubmit-1").onclick = function () {
+  console.log("clicked");
   var zip = document.getElementById("zip").value;
 
   if (zip.length >= 2) {
@@ -234,7 +235,7 @@ document.getElementById("searchSubmit").onclick = function () {
   if (zip != '') {
     var _url = 'api/searchbyzip/' + zip + '/' + type;
 
-    callApi(_url);
+    callApi(_url, "searchSubmit-1");
     return;
   } // clear outpulist and list element
 
@@ -257,19 +258,70 @@ document.getElementById("searchSubmit").onclick = function () {
   console.log("formatted_address", formatted_address); // type , radius
 
   var url = "api/call" + "?lat=" + lat + "&lng=" + lng + "&type=" + type + "&radius=" + radius + "&placeid=" + placeid + "&formattedaddress=" + formatted_address;
-  callApi(url);
+  callApi(url, "searchSubmit-1");
   return false;
 };
 
-function callApi(url) {
-  document.getElementById("searchSubmit").classList.add("d-none");
+document.getElementById("searchSubmit-2").onclick = function () {
+  console.log("clicked");
+  var zip = document.getElementById("zip").value;
+
+  if (zip.length >= 2) {
+    var type = document.getElementById("type1").options[document.getElementById("type1").options.selectedIndex].value;
+  } else {
+    var type = document.getElementById("type2").options[document.getElementById("type2").options.selectedIndex].value;
+  }
+
+  if (type == "0") {
+    document.querySelector('#custom-error-alert').classList.add("in");
+    setTimeout(function () {
+      document.querySelector('#custom-error-alert').classList.remove("in");
+    }, 3000);
+    return;
+  }
+
+  document.getElementById("myTable").getElementsByTagName('tbody')[0].innerHTML = "";
+
+  if (zip != '') {
+    var _url2 = 'api/searchbyzip/' + zip + '/' + type;
+
+    callApi(_url2, "searchSubmit-2");
+    return;
+  } // clear outpulist and list element
+
+
+  document.getElementById("myList").innerHTML = '';
+  var lat = document.getElementById('latitude').value;
+  var lng = document.getElementById('longitude').value;
+  var placeid = document.getElementById('place-id').value;
+
+  if (type == "0" || document.getElementById('location').value == "") {
+    document.querySelector('#custom-error-alert').classList.add("in");
+    setTimeout(function () {
+      document.querySelector('#custom-error-alert').classList.remove("in");
+    }, 3000);
+    return;
+  }
+
+  var radius = document.getElementById('radius').value;
+  var formatted_address = encodeURI(document.getElementById('formatted-address').value);
+  console.log("formatted_address", formatted_address); // type , radius
+
+  var url = "api/call" + "?lat=" + lat + "&lng=" + lng + "&type=" + type + "&radius=" + radius + "&placeid=" + placeid + "&formattedaddress=" + formatted_address;
+  callApi(url, "searchSubmit-2");
+  return false;
+};
+
+function callApi(url, btnElem) {
+  console.log("btnElem", btnElem);
+  document.getElementById(btnElem).classList.add("d-none");
   document.getElementsByClassName("lds-ripple")[0].classList.remove("d-none");
   fetch(url).then(function (response) {
     return response.json();
   }).then(function (data) {
     console.log("data response", data);
     window.t = data;
-    document.getElementById("searchSubmit").classList.remove("d-none");
+    document.getElementById(btnElem).classList.remove("d-none");
     document.getElementsByClassName("lds-ripple")[0].classList.add("d-none");
     BuildTable(data);
     document.getElementById("hits").innerHTML = data.results.length + " Treffer!";
