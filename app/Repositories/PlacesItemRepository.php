@@ -161,7 +161,7 @@ class PlacesItemRepository {
             // call google places nearby api                        
             $_places_items_all[$name] = $this->get_places_data_from_google_api($places_parameters);                    
         }            
-        return $_places_items_all;
+        #return $_places_items_all;
         $_places_items_merged = call_user_func_array('array_merge', $_places_items_all);        
         $_places_items = $this->helper_array_multi_unique($_places_items_merged);       
         
