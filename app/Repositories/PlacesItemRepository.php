@@ -86,7 +86,7 @@ class PlacesItemRepository {
             ["type", "=", $request->input("type")],
             ["radius", "=", $request->input("radius")]
         ])->first();
-        
+        #return $this->startNewLocationSearch($request);
         if ($userLocations) {
             /**
              * check if cache duration expired
@@ -161,7 +161,7 @@ class PlacesItemRepository {
             // call google places nearby api                        
             $_places_items_all[$name] = $this->get_places_data_from_google_api($places_parameters);                    
         }            
-        
+        return $_places_items_all;
         $_places_items_merged = call_user_func_array('array_merge', $_places_items_all);        
         $_places_items = $this->helper_array_multi_unique($_places_items_merged);       
         
@@ -321,36 +321,37 @@ class PlacesItemRepository {
      * @param Array $request
      * @return Array
      */
-    public function get_places_data_from_google_api(Array $request): Array {
-        sleep($this->sleeping_in_seconds);        
-        $pagetoken = $type = "";
-        $pagetoken = isset($request['pagetoken']) ? $request['pagetoken'] : null;
+    public function get_places_data_from_google_api(Array $request): Array {        
         $type = ( null !== $request['type'] ) ? $request['type'] : 'bar';        
         $radius = isset($request['radius']) ? $request['radius'] : 1500;
-
-        $response = [];   
-        $response = Http::get('https://maps.googleapis.com/maps/api/place/nearbysearch/json', 
-            [
+        $r = [];
+        do {
+            $paras = [
                 'location'=> $request['lat'].",".$request['lng'],
                 'radius' => $radius,
                 'language' => 'de',
                 'type' => $type,
-                'key'=> $this->google_api_key,
-                'pagetoken' => $pagetoken
-            ]
-        );  
-        if ($response->status() == 200 && $response->successful() == true) 
-        {
-            $this->result_array_set = array_merge( $this->result_array_set, $response->json()["results"] );
-            if ( isset ($response->json()["next_page_token"]) ) {            
-                $request["pagetoken"] = $response->json()["next_page_token"];
-                $this->get_places_data_from_google_api($request);
+                'key'=> $this->google_api_key,                
+            ];       
+            if(isset ($response)) {                
+                $paras['pagetoken'] = (isset ($response->json()["next_page_token"]) ? $response->json()["next_page_token"] : NULL);                
             }            
-        } else {
-            return $this->result_array_set;
-        }        
-        return $this->result_array_set;
+            #echo '<pre>';print_r($paras);echo '</pre>';
+            $response = null;
+            $response = $this->api_google_nearbysearch_request($paras);            
+            #echo '<pre>';print_r($response->json()["results"]);echo '</pre>';
+            if ($response->status() == 200 && $response->successful() == true) 
+            {                
+                $r = array_merge( $r, $response->json()["results"] );                
+            }                        
+        } while (isset ($response->json()["next_page_token"]));
+        return ( $r );        
     }    
+
+    protected function api_google_nearbysearch_request($paras) {
+        sleep($this->sleeping_in_seconds);        
+        return Http::get('https://maps.googleapis.com/maps/api/place/nearbysearch/json', $paras);        
+    }
 
     /**
      * Call the google places api for recieving detailinformation about this place.
