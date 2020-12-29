@@ -164,21 +164,24 @@ class PlacesItemRepository {
         #return $_places_items_all;
         $_places_items_merged = call_user_func_array('array_merge', $_places_items_all);        
         $_places_items = $this->helper_array_multi_unique($_places_items_merged);       
-        
-        // iterate $_places_items an insert place_id, request_id to the relation table            
+
+        // iterate $_places_items an insert place_id, request_id to the relation table         
+        $deleted = [];   
         foreach($_places_items as $key => $item) {
             $_placeItem = PlacesItem::where(["place_id"=>$item['place_id']])->first();
             $delete_item = false;
             if($_placeItem) {
                 $delete_item = true;
             }   
-            if ($delete_item) {
-                unset($_places_items[$key]);                
-            }               
+             
             RelSearchToPlace::firstOrCreate([
                 'user_request_id' => $new_userLocations_id,
                 'places_id' => $item['place_id']
                 ]); 
+
+            if ($delete_item === true) {                
+                unset($_places_items[$key]);                
+            }                  
         }    
 
         // call google api details and merge both 
@@ -190,12 +193,14 @@ class PlacesItemRepository {
                 $this->store_full_dataset( $item );
             });    
         }               
+        
         return [
             "status"=> "OK", 
             "results" => $this->get_place_items_by_request_id($new_userLocations_id),
             "referenz" => $new_userLocations_id,
             "dev_comment" => 'New data catched from latest google places api call.',
-            "cached_data" => "no"
+            "cached_data" => "no", 
+            "plain" => $_places_items_all
         ];    
     }    
 
