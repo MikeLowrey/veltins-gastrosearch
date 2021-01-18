@@ -13,7 +13,17 @@
 
     <!-- Custom styles for this template -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <style>    
+    <style> 
+    a.reset-input-btn {
+        display: block;
+        position: absolute;
+        top: 14px;
+        right: 15px;
+        font-size: 15px;
+        padding-left: 15px;
+        cursor: pointer;
+        font-weight: 700;        
+    }
     </style>    
   </head>
   <body>
@@ -62,6 +72,13 @@
                         <label for="zip">PLZ</label>
                         <input type="text" class="form-control" id="zip" placeholder="PLZ" required autocomplete="off">                                                
                     </div>
+                    <!--div class="input-group "  style="position: relative;">
+                        <input class="form-control " type="search" value="search" id="example-search-input">                        
+                        <a class="reset-input-btn" style="display: block;" onclick="alert()">
+                            <svg width="16" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="eraser" class="svg-inline--fa fa-eraser fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M497.941 273.941c18.745-18.745 18.745-49.137 0-67.882l-160-160c-18.745-18.745-49.136-18.746-67.883 0l-256 256c-18.745 18.745-18.745 49.137 0 67.882l96 96A48.004 48.004 0 0 0 144 480h356c6.627 0 12-5.373 12-12v-40c0-6.627-5.373-12-12-12H355.883l142.058-142.059zm-302.627-62.627l137.373 137.373L265.373 416H150.628l-80-80 124.686-124.686z"></path></svg>
+                        </a>    
+                    </div-->                    
+                    
                     <div class="row justify-content-center">
                         <div class="form-group ">
                             <button type="button" class="btn btn-secondary btn-lg" id="searchSubmit-1">Suche</button>                        
@@ -152,7 +169,7 @@
     <div id="output" style="background-color:#f1f1f1;">
         <ul id="myList"></ul>  
     </div>
-
+    <div class="table-responsive">
     <table class="table" id="myTable">
         <thead>
           <tr>
@@ -163,21 +180,24 @@
             <th>
                 Str
             </th>
-            <th class="sortable" onclick="sortTable(1)">
+            <th class="sortable" onclick="sortTable(2)">
                 <svg width="10"  aria-hidden="true" focusable="false" data-prefix="fas" data-icon="sort" class="svg-inline--fa fa-sort fa-w-10" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M41 288h238c21.4 0 32.1 25.9 17 41L177 448c-9.4 9.4-24.6 9.4-33.9 0L24 329c-15.1-15.1-4.4-41 17-41zm255-105L177 64c-9.4-9.4-24.6-9.4-33.9 0L24 183c-15.1 15.1-4.4 41 17 41h238c21.4 0 32.1-25.9 17-41z"></path></svg>
                 PLZ
             </th>
-            <th class="sortable" onclick="sortTable(2)">
+            <th class="sortable" onclick="sortTable(3)">
                 <svg width="10"  aria-hidden="true" focusable="false" data-prefix="fas" data-icon="sort" class="svg-inline--fa fa-sort fa-w-10" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M41 288h238c21.4 0 32.1 25.9 17 41L177 448c-9.4 9.4-24.6 9.4-33.9 0L24 329c-15.1-15.1-4.4-41 17-41zm255-105L177 64c-9.4-9.4-24.6-9.4-33.9 0L24 183c-15.1 15.1-4.4 41 17 41h238c21.4 0 32.1-25.9 17-41z"></path></svg>
                 Ort
             </th>
             <th>Tel</th>
+            <th>Homepage</th>
+            <th>Bewertung</th>
+            <th>Anzahl der Bewertungen</th>
             <th></th>            
           </tr>
         </thead>
         <tbody>
         </tbody>                                    
-    </table>
+    </table></div>
 </div>
 
 <footer class="text-muted">

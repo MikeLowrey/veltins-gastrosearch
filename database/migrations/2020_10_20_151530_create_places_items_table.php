@@ -29,6 +29,7 @@ class CreatePlacesItemsTable extends Migration
             $table->string('business_status')->nullable();
             $table->string('formatted_address')->nullable();               
             $table->integer('user_ratings_total')->default(0);                           
+            $table->decimal('rating', 2, 1)->default(0);
             $table->timestamps();
         });
     }

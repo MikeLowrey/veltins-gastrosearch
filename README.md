@@ -135,3 +135,8 @@ curl -X GET \
 ```
 Response Statuscode 200
 
+**Frontend set Tablesort**
+It is important to know that when you change the order of the columns, you also change the parameter of the onlclick event from the sortable colums of the table. e.g. ( onclick="sortTable(3)" )
+
+**Changes in the Javascript**
+To apply your js changes start npm run dev

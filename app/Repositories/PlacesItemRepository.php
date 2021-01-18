@@ -41,7 +41,7 @@ class PlacesItemRepository {
      * 
      * @var integer
      */    
-    protected $sleeping_in_seconds = 1;
+    protected $sleeping_in_seconds = 3;
 
     /**
      *
@@ -80,7 +80,16 @@ class PlacesItemRepository {
 
     public function getPlacesItemsByParams(Request $request) {        
         $request->validated();
-
+        #return $this->startNewLocationSearch($request);
+        /*
+        return $this->get_places_data_from_google_api(
+            [
+                'type' => $request->input("type"),
+                'lat' => $request->input("lat"),
+                'lng' => $request->input("lng"),
+                'radius' => $request->input("radius"), 
+            ]
+        );*/
         $userLocations = UserLocationRequest::where([
             ["place_id","=",$request->input("placeid")],
             ["type", "=", $request->input("type")],
@@ -165,8 +174,7 @@ class PlacesItemRepository {
         $_places_items_merged = call_user_func_array('array_merge', $_places_items_all);        
         $_places_items = $this->helper_array_multi_unique($_places_items_merged);       
 
-        // iterate $_places_items an insert place_id, request_id to the relation table         
-        $deleted = [];   
+        // iterate $_places_items an insert place_id, request_id to the relation table                 
         foreach($_places_items as $key => $item) {
             $_placeItem = PlacesItem::where(["place_id"=>$item['place_id']])->first();
             $delete_item = false;
@@ -187,6 +195,7 @@ class PlacesItemRepository {
         // call google api details and merge both 
         if (count($_places_items) > 0)
         {
+            #dd($_places_items); // 2021
             $_places_items_with_details = $this->get_google_places_details_by_place_id( $_places_items );           
             // store results in databse
             array_walk($_places_items_with_details, function($item) {
@@ -342,14 +351,17 @@ class PlacesItemRepository {
                 $paras['pagetoken'] = (isset ($response->json()["next_page_token"]) ? $response->json()["next_page_token"] : NULL);                
             }            
             #echo '<pre>';print_r($paras);echo '</pre>';
-            $response = null;
+            #$response = null;
             $response = $this->api_google_nearbysearch_request($paras);            
-            #echo '<pre>';print_r($response->json()["results"]);echo '</pre>';
+            #echo '<pre>';print_r(count($response->json()["results"]));echo '</pre>';
             if ($response->status() == 200 && $response->successful() == true) 
             {                
-                $r = array_merge( $r, $response->json()["results"] );                
+                #echo '<pre>';print_r(count($response->json()["results"]));echo '</pre>';
+                #$r = array_merge( $r, $response->json()["results"] ); 
+                $r[] = $response->json()["results"];
             }                        
         } while (isset ($response->json()["next_page_token"]));
+        return call_user_func_array('array_merge', $r);
         return ( $r );        
     }    
 
@@ -395,6 +407,7 @@ class PlacesItemRepository {
                     'fields' => $fields,
                     'key' => $this->google_api_key
                     ]);
+
             $results[$key] = $response->json();
             $items[$key]["name"] = ( isset($response->json()['result']['name']) ?  
                 $response->json()['result']['name'] : NULL );
@@ -412,7 +425,9 @@ class PlacesItemRepository {
             $items[$key]["street"] = $this->filter_value_from_google_address_components_by_name($response->json(), "route");
             $items[$key]["place"] = $this->filter_value_from_google_address_components_by_name($response->json(), "locality");                
             $items[$key]["country"] = $this->filter_value_from_google_address_components_by_name($response->json(), "country");                
-        }        
+            $items[$key]["rating"] = ( isset($response->json()['result']['rating']) ?  
+                $response->json()['result']['rating'] : 0 );
+        }                
         return $items;
     }  
     
@@ -573,7 +588,7 @@ class PlacesItemRepository {
         $new_item->website = $full_dataset["website"];
         $new_item->formatted_address = $full_dataset["formatted_address"];
         $new_item->user_ratings_total = isset($full_dataset["user_ratings_total"]) ? $full_dataset["user_ratings_total"] : 0;
-
+        $new_item->rating = isset($full_dataset["rating"]) ? $full_dataset["rating"] : 0;
         $new_item->save();
     }        
     

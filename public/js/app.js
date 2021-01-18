@@ -361,12 +361,21 @@ function BuildTable(obj) {
     var cell4 = row.insertCell(3);
     var cell5 = row.insertCell(4);
     var cell6 = row.insertCell(5);
+    var cell7 = row.insertCell(6);
+    var cell8 = row.insertCell(7);
+    var cell9 = row.insertCell(8); //let cell6 = row.insertCell(5);
+
     cell1.innerHTML = value.name.substring(0, 40);
     cell2.innerHTML = "".concat(value.street, " ").concat(value.street_number);
     cell3.innerHTML = "".concat(value.zip);
     cell4.innerHTML = "".concat(value.place);
     cell5.innerHTML = "".concat(value.phone !== null ? value.phone : '-');
-    cell6.innerHTML = "<span class=\"popup\" onclick=\"showPopUp(".concat(value.id, ")\"><svg class=\"info-icon\" aria-hidden=\"true\" focusable=\"false\" data-prefix=\"fas\" data-icon=\"info-circle\" class=\"svg-inline--fa fa-info-circle fa-w-16\" role=\"img\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><path fill=\"currentColor\" d=\"M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z\"></path></svg>\n        <span class=\"popuptext\" id=\"popup-").concat(value.id, "\">Gecrawlt</br>").concat(timeString, "</span>\n      </span>");
+    cell6.innerHTML = "".concat(value.website !== null ? value.website : '-');
+    cell7.innerHTML = "".concat(value.rating !== null ? value.rating + '<small>/5</small>' : '0');
+    cell8.innerHTML = "".concat(value.user_ratings_total !== null ? value.user_ratings_total : '0');
+    cell9.innerHTML = "<span class=\"popup\" onclick=\"showPopUp(".concat(value.id, ")\"><svg class=\"info-icon\" aria-hidden=\"true\" focusable=\"false\" data-prefix=\"fas\" data-icon=\"info-circle\" class=\"svg-inline--fa fa-info-circle fa-w-16\" role=\"img\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><path fill=\"currentColor\" d=\"M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z\"></path></svg>\n        <span class=\"popuptext\" id=\"popup-").concat(value.id, "\">Gecrawlt</br>").concat(timeString, "</span>\n      </span>"); //cell6.innerHTML = `<span class="popup" onclick="showPopUp(${value.id})"><svg class="info-icon" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="info-circle" class="svg-inline--fa fa-info-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"></path></svg>
+    //    <span class="popuptext" id="popup-${value.id}">Gecrawlt</br>${timeString}</span>
+    //  </span>`      
   });
 }
 
